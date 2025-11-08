@@ -3,18 +3,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Importar todas las pantallas
-import MainScreen from './components/MainScreen';
-import SignUpScreen from './components/SignUpScreen';
-import LoginScreen from './components/LoginScreen';
-import ForgotPasswordScreen from './components/ForgotPasswordScreen';
-import WalletsScreen from './components/WalletsScreen';
-import WalletInfoScreen from './components/WalletInfoScreen';
-import InsertWalletScreen from './components/InsertWalletScreen';
-import PaymentScreen from './components/PaymentScreen';
-import Payment2Screen from './components/Payment2Screen';
-import AccountScreen from './components/AccountScreen';
-import ConfigScreen from './components/ConfigScreen';
-import TransactionScreen from './components/TransactionScreen';
+import MainScreen from './src/components/MainScreen';
+import SignUpScreen from './src/components/SignUpScreen';
+import LoginScreen from './src/components/LoginScreen';
+import ForgotPasswordScreen from './src/components/ForgotPasswordScreen';
+import WalletsScreen from './src/components/WalletsScreen';
+import WalletInfoScreen from './src/components/WalletInfoScreen';
+import InsertWalletScreen from './src/components/InsertWalletScreen';
+import PaymentScreen from './src/components/PaymentScreen';
+import Payment2Screen from './src/components/Payment2Screen';
+import AccountScreen from './src/components/AccountScreen';
+import ConfigScreen from './src/components/ConfigScreen';
+import TransactionScreen from './src/components/TransactionScreen';
 
 const Stack = createNativeStackNavigator();
 
