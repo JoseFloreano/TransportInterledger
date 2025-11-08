@@ -10,8 +10,8 @@ const PORT = process.env.PORT || 3000;
 
 // Valores por defecto
 const DEFAULT_CONFIG = {
-    privateKey: "private_cliente.key",
-    keyId: "df16d5e7-d5f5-4e11-9ab2-56df00346567",
+    privateKey: "private.key",
+    keyId: "54f2db71-3ac3-4a4c-aaa6-64024929e41a",
     clientWalletUrl: "https://ilp.interledger-test.dev/jlflousd"
 };
 

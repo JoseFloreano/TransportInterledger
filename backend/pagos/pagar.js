@@ -82,7 +82,6 @@ async function executeInterledgerPayment({
 
         // Si se necesita la aprobación del usuario
         if (outgoingPaymentGrant.interact && outgoingPaymentGrant.interact.redirect) {
-            // Devolver la URL de redirección y los datos para continuar el pago al frontend.
             return {
                 redirectUrl: outgoingPaymentGrant.interact.redirect,
                 continueUri: outgoingPaymentGrant.continue.uri,
