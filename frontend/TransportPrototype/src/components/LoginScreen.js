@@ -1,13 +1,35 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { authService } from '../services/AuthService';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    // Lógica de login
-    console.log('Login pressed');
+  const handleLogin = async () => {
+    if (!username || !password) {
+      Alert.alert('Error', 'Por favor ingresa usuario y contraseña');
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const result = await authService.login(username, password);
+      
+      if (result.success) {
+        Alert.alert('Éxito', `Bienvenido ${result.user.name}`);
+        // Navegar a la pantalla principal
+        navigation.replace('Wallets');
+      } else {
+        Alert.alert('Error', result.error);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Ocurrió un error al iniciar sesión');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -29,6 +51,7 @@ const LoginScreen = ({ navigation }) => {
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
+          editable={!loading}
         />
 
         <TextInput
@@ -39,6 +62,7 @@ const LoginScreen = ({ navigation }) => {
           onChangeText={setPassword}
           secureTextEntry
           autoCapitalize="none"
+          editable={!loading}
         />
 
         <TouchableOpacity 
@@ -49,15 +73,19 @@ const LoginScreen = ({ navigation }) => {
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={styles.loginButton}
+          style={[styles.loginButton, loading && styles.loginButtonDisabled]}
           onPress={handleLogin}
+          disabled={loading}
         >
-          <Text style={styles.loginButtonText}>LOG IN</Text>
+          <Text style={styles.loginButtonText}>
+            {loading ? 'INICIANDO...' : 'LOG IN'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
