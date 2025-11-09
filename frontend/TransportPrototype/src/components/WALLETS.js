@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { getWallets, deleteWallet } from '../services/WalletService';
+import { authService } from '../services/AuthService';
 
 const WalletCard = ({ wallet, onPress, onLongPress }) => {
   // Asignar colores basados en el tipo o usar colores aleatorios
@@ -36,6 +37,16 @@ const WALLETS = ({ navigation }) => {
   const [wallets, setWallets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [user, setUser] = useState(null);
+
+useEffect(() => {
+  const fetchUser = async () => {
+    const currentUser = await authService.getCurrentUser();
+    setUser(currentUser);
+  };
+  fetchUser();
+}, []);
+
 
   const loadWallets = async () => {
     try {
@@ -80,6 +91,47 @@ const WALLETS = ({ navigation }) => {
       ]
     );
   };
+
+  const dirSELL = (user) => {
+    if (user && user.rol) {
+      if (user.rol === 'common') {
+        console.log("Redirigiendo a la interfaz de usuario común.");
+        navigation.navigate('COMMON_PAY_QR');
+        return;
+      } else if (user.rol === 'service') {
+        console.log("Redirigiendo a la interfaz de usuario de servicio/vendedor.");
+        navigation.navigate('SERVICE_QR_PAY');
+        return;
+      } else {
+        console.log(`Rol desconocido: ${user.rol}. Redirigiendo a la página de inicio.`);
+        return;
+      }
+    } else {
+      console.log("Información de usuario o rol no disponible. Redirigiendo a Login.");
+      navigation.navigate('LOG_IN');
+    }
+  }
+
+  const dirAccount = (user) => {
+    if (user && user.rol) {
+      if (user.rol === 'common') {
+        console.log("Redirigiendo a la interfaz de usuario común.");
+        navigation.navigate('COMMON_ACCOUNT');
+        return;
+      } else if (user.rol === 'service') {
+        console.log("Redirigiendo a la interfaz de usuario de servicio/vendedor.");
+        navigation.navigate('SERVICE_ACCOUNT');
+        return;
+      } else {
+        console.log(`Rol desconocido: ${user.rol}. Redirigiendo a la página de inicio.`);
+        return;
+      }
+    } else {
+      console.log("Información de usuario o rol no disponible. Redirigiendo a Login.");
+      navigation.navigate('LOG_IN');
+    }
+
+  }
 
   // Cargar wallets cuando la pantalla recibe foco
   useFocusEffect(
@@ -139,13 +191,13 @@ const WALLETS = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.navButton}
-          onPress={() => navigation.navigate('COMMON_PAY_QR')}
+          onPress={() => dirSELL(user)}
         >
           <Text style={styles.navIcon}>🛍️</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.navButton}
-          onPress={() => navigation.navigate('COMMON_ACCOUNT')}
+          onPress={() => dirAccount(user)}
         >
           <Text style={styles.navIcon}>👤</Text>
         </TouchableOpacity>

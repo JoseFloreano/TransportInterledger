@@ -2,6 +2,36 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const SERVICE_ACCOUNT = ({ navigation }) => {
+  const [user, setUser] = useState(null);
+
+useEffect(() => {
+  const fetchUser = async () => {
+    const currentUser = await authService.getCurrentUser();
+    setUser(currentUser);
+  };
+  fetchUser();
+}, []);
+
+const dirSELL = (user) => {
+    if (user && user.rol) {
+      if (user.rol === 'common') {
+        console.log("Redirigiendo a la interfaz de usuario común.");
+        navigation.navigate('COMMON_PAY_QR');
+        return;
+      } else if (user.rol === 'service') {
+        console.log("Redirigiendo a la interfaz de usuario de servicio/vendedor.");
+        navigation.navigate('SERVICE_QR_PAY');
+        return;
+      } else {
+        console.log(`Rol desconocido: ${user.rol}. Redirigiendo a la página de inicio.`);
+        return;
+      }
+    } else {
+      console.log("Información de usuario o rol no disponible. Redirigiendo a Login.");
+      navigation.navigate('LOG_IN');
+    }
+  }
+  
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
