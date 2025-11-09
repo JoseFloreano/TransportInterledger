@@ -1,5 +1,5 @@
 // URL base de tu API
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://096a0eaaea59.ngrok-free.app';
 
 // Función para esperar un tiempo determinado
 function esperar(ms) {
