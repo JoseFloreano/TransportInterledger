@@ -34,6 +34,31 @@ export const authService = {
       }
       
       console.log('🌐 No está en predefinidas, buscando en BD...');
+
+      // 3. Intentar buscar por nombre (sin propagación de error)
+      try {
+        console.log('👤 Buscando por nombre:', identifier);
+        const responseByName = await apiCall(`usuario/nombre/${identifier}`, 'GET');
+        console.log('📦 Respuesta de nombre:', responseByName);
+        
+        if (responseByName && !responseByName.error && responseByName.contrasena === password) {
+          console.log('✅ Usuario encontrado por nombre y contraseña correcta');
+          const dbUser = {
+            _id: responseByName._id,
+            correo: responseByName.correo,
+            nombre: responseByName.nombre,
+            rol: responseByName.rol || 'common',
+          };
+          
+          await AsyncStorage.setItem('user', JSON.stringify(dbUser));
+          await AsyncStorage.setItem('isAuthenticated', 'true');
+          return { success: true, user: dbUser };
+        } else if (responseByName && responseByName.contrasena !== password) {
+          console.log('❌ Contraseña incorrecta');
+          return { success: false, error: 'Credenciales incorrectas' };
+        }
+      } catch (nameError) {
+        console.log('⚠️ No encontrado por nombre tampoco');
       
       // 2. Intentar buscar por email (sin propagación de error)
       let response = null;
@@ -63,31 +88,7 @@ export const authService = {
         // No hacer nada, continuar con la búsqueda por nombre
       }
       
-      // 3. Intentar buscar por nombre (sin propagación de error)
-      try {
-        console.log('👤 Buscando por nombre:', identifier);
-        const responseByName = await apiCall(`usuario/nombre/${identifier}`, 'GET');
-        console.log('📦 Respuesta de nombre:', responseByName);
-        
-        if (responseByName && !responseByName.error && responseByName.contrasena === password) {
-          console.log('✅ Usuario encontrado por nombre y contraseña correcta');
-          const dbUser = {
-            _id: responseByName._id,
-            correo: responseByName.correo,
-            nombre: responseByName.nombre,
-            rol: responseByName.rol || 'common',
-          };
-          
-          await AsyncStorage.setItem('user', JSON.stringify(dbUser));
-          await AsyncStorage.setItem('isAuthenticated', 'true');
-          return { success: true, user: dbUser };
-        } else if (responseByName && responseByName.contrasena !== password) {
-          console.log('❌ Contraseña incorrecta');
-          return { success: false, error: 'Credenciales incorrectas' };
-        }
-      } catch (nameError) {
-        console.log('⚠️ No encontrado por nombre tampoco');
-        // Continuar al final
+      // Continuar al final
       }
       
       // 4. Si llegamos aquí, el usuario no existe
