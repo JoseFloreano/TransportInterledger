@@ -1,12 +1,36 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { authService } from '../services/AuthService';
 
-const LOG_IN = ({ navigation }) => {
+const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    console.log('Login');
+  const handleLogin = async () => {
+    if (!username || !password) {
+      Alert.alert('Error', 'Por favor ingresa usuario y contraseña');
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const result = await authService.login(username, password);
+      
+      if (result.success) {
+        Alert.alert('Éxito', `Bienvenido ${result.user.name}`);
+        // Navegar a la pantalla principal
+        navigation.replace('Wallets');
+        console.log("LOG IN")
+      } else {
+        Alert.alert('Error', result.error);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Ocurrió un error al iniciar sesión');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
