@@ -1,14 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { cartService } from '../services/CartService';
+import { getProducts } from '../services/ProductsService';
 
 const SERVICE_SELL_NFC = ({ navigation }) => {
+  const [cartTotal, setCartTotal] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadCartTotal();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  const loadCartTotal = async () => {
+    const cart = await cartService.getCart();
+    const result = await getProducts();
+    
+    if (result.success && result.data) {
+      let total = 0;
+      result.data.forEach(product => {
+        const amount = cart[product._id] || 0;
+        total += product.precio * amount;
+      });
+      setCartTotal(total);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.qrButton}>
+        <TouchableOpacity style={styles.qrButton} onPress={() => navigation.navigate('SERVICE_QR_PAY')}>
           <Text style={styles.qrButtonText}>QR</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.cartButton}>
+        <TouchableOpacity style={styles.cartButton} onPress={() => navigation.navigate('SHOPPINGCART_PRODUCTS')}>
           <Text style={styles.cartIcon}>🛒</Text>
         </TouchableOpacity>
       </View>
@@ -21,6 +47,14 @@ const SERVICE_SELL_NFC = ({ navigation }) => {
         <View style={styles.messageContainer}>
           <Text style={styles.message}>Please bring your{'\n'}phone closer to{'\n'}the device.</Text>
         </View>
+        
+        {/* Mostrar total solo si es mayor a 0 */}
+        {cartTotal > 0 && (
+          <View style={styles.totalBadge}>
+            <Text style={styles.totalText}>${cartTotal.toFixed(2)}</Text>
+          </View>
+        )}
+        
         <View style={styles.toggleContainer}>
           <Text style={styles.toggleText}>ME</Text>
           <Text style={styles.arrow}>←</Text>
@@ -54,8 +88,10 @@ const styles = StyleSheet.create({
   productButton: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#E8E8E8', paddingVertical: 18, paddingHorizontal: 20, borderRadius: 15, marginBottom: 40 },
   productText: { fontSize: 15, color: '#2C2C2C' },
   chevron: { fontSize: 20, color: '#2C2C2C' },
-  messageContainer: { alignItems: 'center', marginBottom: 40 },
+  messageContainer: { alignItems: 'center', marginBottom: 30 },
   message: { fontSize: 22, fontWeight: '500', color: '#2C2C2C', textAlign: 'center', lineHeight: 32 },
+  totalBadge: { backgroundColor: '#E8E8E8', paddingVertical: 12, paddingHorizontal: 30, borderRadius: 20, alignSelf: 'center', marginBottom: 20 },
+  totalText: { fontSize: 18, fontWeight: '600', color: '#2C2C2C' },
   toggleContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
   toggleText: { fontSize: 16, fontWeight: '500', color: '#2C2C2C', marginHorizontal: 15 },
   arrow: { fontSize: 24, color: '#2C2C2C' },
