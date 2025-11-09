@@ -13,6 +13,16 @@ export const qrService = {
     return JSON.stringify(qrData);
   },
 
+  // Generar qr con el Carrito
+   generateCartQR(cartData) {
+    return JSON.stringify({
+      type: 'cart',
+      items: cartData.items,
+      total: cartData.total,
+      timestamp: cartData.timestamp
+    });
+  },
+
   // Leer QR
   parseQRData(qrData) {
     try {
