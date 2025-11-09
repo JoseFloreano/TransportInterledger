@@ -27,6 +27,26 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Agregar esta ruta a tu router
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const wallets = await Wallet.find({ id_usuario: req.params.userId });
+        res.json(wallets);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener las wallets del usuario' });
+    }
+});
+
+router.post('/', async (req, res) => {
+    try {
+        const wallet = await Wallet.create(req.body);
+        res.status(201).json(wallet);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al crear la wallet' });
+    }
+});
 
 router.put('/:id', async (req, res) => {
     try {
@@ -54,6 +74,7 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ error: 'Error al eliminar la wallet' });
     }
 });
+
 
 
 export default router;
