@@ -1,7 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { authService } from '../services/AuthService';
 
 const COMMON_ACCOUNT = ({ navigation }) => {
+
+  const handleLogout = async () => {
+    await authService.logout();
+    navigation.replace('MAIN'); // Redirige a la pantalla de login
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>NOMBRE APP</Text>
@@ -31,7 +38,10 @@ const COMMON_ACCOUNT = ({ navigation }) => {
           <Text style={styles.chevron}>{'>'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItemLast}>
+        <TouchableOpacity
+          style={styles.menuItemLast}
+          onPress={handleLogout}  // ✅ ahora funciona
+        >
           <Text style={styles.menuText}>close session</Text>
         </TouchableOpacity>
       </View>

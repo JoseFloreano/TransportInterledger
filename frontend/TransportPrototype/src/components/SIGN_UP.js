@@ -1,15 +1,46 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+// import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { sign_service } from '../services/SIGN_UP_SERVICE';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+
 
 const SIGN_UP = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  
 
-  const handleSignUp = () => {
-    console.log('Sign up');
-  };
+  const handleSignUp = async () => {
+  if (!username || !email || !password || !confirmPassword) {
+    Alert.alert('Error', 'Por favor llena todos los campos.');
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    Alert.alert('Error', 'Las contraseñas no coinciden.');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const result = await sign_service.sign_up(username, email, password);
+
+    if (result.success) {
+      Alert.alert('Éxito', `Bienvenido ${result.user.nombre}`);
+      navigation.replace('WALLETS');
+    } else {
+      Alert.alert('Error', result.error);
+    }
+  } catch (error) {
+    Alert.alert('Error', 'Ocurrió un problema al registrarte');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleSelectPhoto = () => {
     console.log('Select photo');
