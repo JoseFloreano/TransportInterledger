@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 
-const SIGN_UP = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+const LOG_IN = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignUp = () => {
-    console.log('Sign up');
-  };
-
-  const handleSelectPhoto = () => {
-    console.log('Select photo');
+  const handleLogin = () => {
+    console.log('Login');
   };
 
   return (
@@ -27,28 +21,9 @@ const SIGN_UP = ({ navigation }) => {
       <Text style={styles.header}>NOMBRE APP</Text>
 
       <View style={styles.content}>
-        <TouchableOpacity 
-          style={styles.photoContainer}
-          onPress={handleSelectPhoto}
-        >
-          <View style={styles.photoCircle}>
-            <Text style={styles.cameraIcon}>📷</Text>
-          </View>
-        </TouchableOpacity>
-
         <TextInput
           style={styles.input}
-          placeholder="email"
-          placeholderTextColor="#666"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="username"
+          placeholder="username/email"
           placeholderTextColor="#666"
           value={username}
           onChangeText={setUsername}
@@ -65,21 +40,18 @@ const SIGN_UP = ({ navigation }) => {
           autoCapitalize="none"
         />
 
-        <TextInput
-          style={styles.input}
-          placeholder="confirm password"
-          placeholderTextColor="#666"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry
-          autoCapitalize="none"
-        />
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('FORGOT_PASSWORD')}
+          style={styles.forgotPasswordContainer}
+        >
+          <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity 
-          style={styles.signUpButton}
-          onPress={handleSignUp}
+          style={styles.loginButton}
+          onPress={handleLogin}
         >
-          <Text style={styles.signUpButtonText}>SING UP</Text>
+          <Text style={styles.loginButtonText}>LOG IN</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -108,25 +80,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: '#2C2C2C',
-    marginBottom: 40,
+    marginBottom: 60,
   },
   content: {
     paddingHorizontal: 40,
-    alignItems: 'center',
-  },
-  photoContainer: {
-    marginBottom: 30,
-  },
-  photoCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#D8D8D8',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cameraIcon: {
-    fontSize: 40,
   },
   input: {
     width: '100%',
@@ -138,7 +95,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#2C2C2C',
   },
-  signUpButton: {
+  forgotPasswordContainer: {
+    alignSelf: 'flex-start',
+    marginTop: 5,
+    marginBottom: 30,
+  },
+  forgotPasswordText: {
+    fontSize: 14,
+    color: '#2C2C2C',
+    textDecorationLine: 'underline',
+  },
+  loginButton: {
     width: '100%',
     backgroundColor: '#E8E8E8',
     paddingVertical: 18,
@@ -146,11 +113,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
   },
-  signUpButtonText: {
+  loginButtonText: {
     fontSize: 16,
     fontWeight: '500',
     color: '#2C2C2C',
   },
 });
 
-export default SIGN_UP;
+export default LOG_IN;

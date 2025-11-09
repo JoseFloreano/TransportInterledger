@@ -79,7 +79,7 @@ const SIGN_UP = ({ navigation }) => {
           style={styles.signUpButton}
           onPress={handleSignUp}
         >
-          <Text style={styles.signUpButtonText}>SING UP</Text>
+          <Text style={styles.signUpButtonText}>SIGN UP</Text>
         </TouchableOpacity>
       </View>
     </View>
