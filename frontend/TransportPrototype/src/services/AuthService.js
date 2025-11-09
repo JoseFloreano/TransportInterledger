@@ -1,83 +1,104 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { apiCall } from './APICall';
+import { apiCall } from './APICall'; // HOLA
 
 export const authService = {
   predefinedAccounts: [
     {
-      email: 'usuario1@ejemplo.com',
-      password: 'password123',
-      name: 'Usuario Uno',
+      correo: 'usuario1@ejemplo.com',
+      contrasena: 'password123',
+      nombre: 'Usuario Uno',
       rol: 'common'
     },
     {
-      email: 'usuario2@ejemplo.com',
-      password: 'password456',
-      name: 'Usuario Dos',
+      correo: 'usuario2@ejemplo.com',
+      contrasena: 'password456',
+      nombre: 'Usuario Dos',
       rol: 'buyer'
     }
   ],
 
   async login(identifier, password) {
     try {
+      console.log('🔐 Iniciando login con:', identifier);
+      
       // 1. Buscar primero en cuentas predefinidas
       const localAccount = this.predefinedAccounts.find(
-        acc => (acc.email === identifier || acc.name === identifier) && acc.contrasena === password
+        acc => (acc.correo === identifier || acc.nombre === identifier) && acc.contrasena === password
       );
       
       if (localAccount) {
+        console.log('✅ Usuario encontrado en cuentas predefinidas');
         await AsyncStorage.setItem('user', JSON.stringify(localAccount));
         await AsyncStorage.setItem('isAuthenticated', 'true');
         return { success: true, user: localAccount };
       }
       
-      // 2. Simular delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // 3. Intentar buscar por email
-      const response = await apiCall(`usuario/email/${identifier}`, 'GET');
-      
-      // Verificar si hay error en la respuesta
-      if (response && response.error) {
-        return { success: false, error: response.error };
-      }
-      
-      if (response && response.contrasena === password) {
-        const dbUser = {
-          correo: response.correo,
-          nombre: response.nombre,
-          rol: response.rol || 'common',
-        };
+      console.log('🌐 No está en predefinidas, buscando en BD...');
+
+      // 3. Intentar buscar por nombre (sin propagación de error)
+      try {
+        console.log('👤 Buscando por nombre:', identifier);
+        const responseByName = await apiCall(`usuario/nombre/${identifier}`, 'GET');
+        console.log('📦 Respuesta de nombre:', responseByName);
         
-        await AsyncStorage.setItem('user', JSON.stringify(dbUser));
-        await AsyncStorage.setItem('isAuthenticated', 'true');
-        return { success: true, user: dbUser };
+        if (responseByName && !responseByName.error && responseByName.contrasena === password) {
+          console.log('✅ Usuario encontrado por nombre y contraseña correcta');
+          const dbUser = {
+            _id: responseByName._id,
+            correo: responseByName.correo,
+            nombre: responseByName.nombre,
+            rol: responseByName.rol || 'common',
+          };
+          
+          await AsyncStorage.setItem('user', JSON.stringify(dbUser));
+          await AsyncStorage.setItem('isAuthenticated', 'true');
+          return { success: true, user: dbUser };
+        } else if (responseByName && responseByName.contrasena !== password) {
+          console.log('❌ Contraseña incorrecta');
+          return { success: false, error: 'Credenciales incorrectas' };
+        }
+      } catch (nameError) {
+        console.log('⚠ No encontrado por nombre tampoco');
+      // Continuar al final
       }
       
-      // 4. Si no es email, intentar buscar por nombre
-      const responseByName = await apiCall(`usuario/nombre/${identifier}`, 'GET');
-      
-      // Verificar si hay error en la respuesta
-      if (responseByName && responseByName.error) {
-        return { success: false, error: responseByName.error };
-      }
-      
-      if (responseByName && responseByName.contrasena === password) {
-        const dbUser = {
-          correo: responseByName.correo,  // ✅ Corregido
-          nombre: responseByName.nombre,   // ✅ Corregido
-          rol: responseByName.rol || 'common', // ✅ Corregido
-        };
+      // 2. Intentar buscar por email (sin propagación de error)
+      let response = null;
+      try {
+        console.log('📧 Buscando por email:', identifier);
+        response = await apiCall(`usuario/email/${identifier}`, 'GET');
+        console.log('📦 Respuesta de email:', response);
         
-        await AsyncStorage.setItem('user', JSON.stringify(dbUser));
-        await AsyncStorage.setItem('isAuthenticated', 'true');
-        return { success: true, user: dbUser };
+        if (response && !response.error && response.contrasena === password) {
+          console.log('✅ Usuario encontrado por email y contraseña correcta');
+          const dbUser = {
+            _id: response._id,
+            correo: response.correo,
+            nombre: response.nombre,
+            rol: response.rol || 'common',
+          };
+          
+          await AsyncStorage.setItem('user', JSON.stringify(dbUser));
+          await AsyncStorage.setItem('isAuthenticated', 'true');
+          return { success: true, user: dbUser };
+        } else if (response && response.contrasena !== password) {
+          console.log('❌ Contraseña incorrecta');
+          return { success: false, error: 'Credenciales incorrectas' };
+        }
+      } catch (emailError) {
+        console.log('⚠ No encontrado por email (404 o error), intentando por nombre...');
+        // No hacer nada, continuar con la búsqueda por nombre
       }
       
-      return { success: false, error: 'Credenciales incorrectas' };
+      
+      // 4. Si llegamos aquí, el usuario no existe
+      console.log('❌ Usuario no encontrado en ninguna búsqueda');
+      return { success: false, error: 'Usuario no encontrado' };
       
     } catch (error) {
-      console.error('Error al consultar la base de datos:', error);
-      return { success: false, error: 'Error al conectar con el servidor' };
+      console.error('❌ Error general en login:', error);
+      console.error('❌ Mensaje:', error.message);
+      return { success: false, error: 'Error al consultar la base de datos' };
     }
   },
 
@@ -92,7 +113,12 @@ export const authService = {
   },
 
   async getCurrentUser() {
-    const user = await AsyncStorage.getItem('user'); // ✅ Consistente
+    const user = await AsyncStorage.getItem('user');
     return user ? JSON.parse(user) : null;
+  },
+
+  async getCurrentUserId() {
+    const user = await this.getCurrentUser();
+    return user ? user._id : null;
   }
 };

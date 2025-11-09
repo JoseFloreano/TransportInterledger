@@ -2,6 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { authService } from '../services/AuthService';
 
+const handleLogout = async () => {
+  await authService.logout();
+  navigation.replace('MAIN'); // reemplaza la pila actual con la pantalla de login
+};
+
 const COMMON_ACCOUNT = ({ navigation }) => {
   return (
     <View style={styles.container}>
@@ -32,7 +37,10 @@ const COMMON_ACCOUNT = ({ navigation }) => {
           <Text style={styles.chevron}>{'>'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItemLast}>
+        <TouchableOpacity
+          style={styles.menuItemLast}
+          onPress={() => handleLogout()}        
+        >
           <Text style={styles.menuText}>close session</Text>
         </TouchableOpacity>
       </View>
