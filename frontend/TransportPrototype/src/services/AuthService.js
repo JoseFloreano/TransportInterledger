@@ -21,7 +21,7 @@ export const authService = {
     try {
       // 1. Buscar primero en cuentas predefinidas
       const localAccount = this.predefinedAccounts.find(
-        acc => (acc.email === identifier || acc.name === identifier) && acc.password === password
+        acc => (acc.email === identifier || acc.name === identifier) && acc.contrasena === password
       );
       
       if (localAccount) {
@@ -41,7 +41,7 @@ export const authService = {
         return { success: false, error: response.error };
       }
       
-      if (response && response.contraseña === password) {
+      if (response && response.contrasena === password) {
         const dbUser = {
           correo: response.correo,
           nombre: response.nombre,
@@ -61,7 +61,7 @@ export const authService = {
         return { success: false, error: responseByName.error };
       }
       
-      if (responseByName && responseByName.contraseña === password) {
+      if (responseByName && responseByName.contrasena === password) {
         const dbUser = {
           correo: responseByName.correo,  // ✅ Corregido
           nombre: responseByName.nombre,   // ✅ Corregido
