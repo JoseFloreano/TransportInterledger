@@ -1,12 +1,27 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { initNFC, startReading, stopNFC } from '../services/nfcService';
 
 const COMMON_PAY_NFC = ({ navigation }) => {
+  useEffect(() => {
+    // Initialize NFC when component mounts
+    initNFC();
+
+    // Automatically start reading when screen opens
+    startReading(tag => {
+      console.log('Tag detected:', tag);
+      Alert.alert('NFC Tag', JSON.stringify(tag, null, 2));
+    });
+
+    // Cleanup on unmount
+    return () => stopNFC();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.qrButton} onPress ={() => navigation.navigate('COMMON_PAY_NFC')}>
-          <Text style={styles.qrButtonText} >QR</Text>
+        <TouchableOpacity style={styles.qrButton} onPress={() => navigation.navigate('COMMON_PAY_QR')}>
+          <Text style={styles.qrButtonText}>QR</Text>
         </TouchableOpacity>
       </View>
 
@@ -15,9 +30,7 @@ const COMMON_PAY_NFC = ({ navigation }) => {
       <View style={styles.content}>
         <View style={styles.messageContainer}>
           <Text style={styles.message}>
-            Please bring your{'\n'}
-            phone closer to{'\n'}
-            the device.
+            Please bring your{'\n'}phone closer to{'\n'}the device.
           </Text>
         </View>
       </View>
