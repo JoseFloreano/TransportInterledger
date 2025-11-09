@@ -1,18 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { cartService } from '../services/CartService';
 import { getProducts } from '../services/ProductsService';
+import { initNFC, writePaymentTag, stopNFC } from '../services/nfcService';
 
 const SERVICE_SELL_NFC = ({ navigation }) => {
   const [cartTotal, setCartTotal] = useState(0);
+  const [nfcActive, setNfcActive] = useState(false);
+  const [nfcReady, setNfcReady] = useState(false);
 
   useEffect(() => {
+    // Inicializar NFC cuando el componente se monta
+    initNFC().then(result => {
+      if (result.success) {
+        setNfcReady(true);
+        console.log('NFC inicializado correctamente');
+      } else {
+        Alert.alert('NFC Error', 'Could not initialize NFC. Please check your device settings.');
+      }
+    });
+
+    // Cargar el carrito cuando la pantalla gana foco
     const unsubscribe = navigation.addListener('focus', () => {
       loadCartTotal();
     });
 
-    return unsubscribe;
+    // Cleanup cuando se desmonta el componente
+    return () => {
+      unsubscribe();
+      stopNFC();
+      setNfcActive(false);
+    };
   }, [navigation]);
+
+  // Cuando cambia el total o el estado de NFC, activar/desactivar write
+  useEffect(() => {
+    if (cartTotal > 0 && nfcReady && !nfcActive) {
+      activateNFCWrite();
+    } else if (cartTotal <= 0 && nfcActive) {
+      deactivateNFCWrite();
+    }
+  }, [cartTotal, nfcReady]);
 
   const loadCartTotal = async () => {
     const cart = await cartService.getCart();
@@ -26,6 +54,51 @@ const SERVICE_SELL_NFC = ({ navigation }) => {
       });
       setCartTotal(total);
     }
+  };
+
+  const activateNFCWrite = async () => {
+    if (nfcActive) return;
+
+    console.log('Activando NFC Write mode...');
+    setNfcActive(true);
+
+    try {
+      // Escribir datos de pago en modo de espera
+      const result = await writePaymentTag();
+      
+      if (result.success) {
+        console.log('NFC Write completado exitosamente');
+        Alert.alert(
+          'Payment Shared',
+          'Payment data has been sent via NFC!',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Opcional: limpiar carrito o navegar
+                // navigation.navigate('CONFIRM_TRANSACTION', { success: true });
+              }
+            }
+          ]
+        );
+      }
+    } catch (error) {
+      console.error('Error en NFC Write:', error);
+    } finally {
+      setNfcActive(false);
+      // Reactivar para el siguiente tap
+      setTimeout(() => {
+        if (cartTotal > 0) {
+          activateNFCWrite();
+        }
+      }, 1000);
+    }
+  };
+
+  const deactivateNFCWrite = async () => {
+    console.log('Desactivando NFC Write mode...');
+    await stopNFC();
+    setNfcActive(false);
   };
 
   return (
@@ -44,8 +117,26 @@ const SERVICE_SELL_NFC = ({ navigation }) => {
           <Text style={styles.productText}>product</Text>
           <Text style={styles.chevron}>{'>'}</Text>
         </TouchableOpacity>
+        
         <View style={styles.messageContainer}>
-          <Text style={styles.message}>Please bring your{'\n'}phone closer to{'\n'}the device.</Text>
+          {cartTotal > 0 ? (
+            <>
+              <Text style={styles.message}>
+                NFC Ready{'\n'}
+                Waiting for buyer's device...
+              </Text>
+              {nfcActive && (
+                <View style={styles.nfcIndicator}>
+                  <Text style={styles.nfcIndicatorText}>📡 Active</Text>
+                </View>
+              )}
+            </>
+          ) : (
+            <Text style={styles.message}>
+              Please add products{'\n'}
+              to cart first
+            </Text>
+          )}
         </View>
         
         {/* Mostrar total solo si es mayor a 0 */}
@@ -90,6 +181,8 @@ const styles = StyleSheet.create({
   chevron: { fontSize: 20, color: '#2C2C2C' },
   messageContainer: { alignItems: 'center', marginBottom: 30 },
   message: { fontSize: 22, fontWeight: '500', color: '#2C2C2C', textAlign: 'center', lineHeight: 32 },
+  nfcIndicator: { marginTop: 20, backgroundColor: '#4CAF50', paddingVertical: 8, paddingHorizontal: 20, borderRadius: 15 },
+  nfcIndicatorText: { fontSize: 16, fontWeight: '600', color: '#FFF' },
   totalBadge: { backgroundColor: '#E8E8E8', paddingVertical: 12, paddingHorizontal: 30, borderRadius: 20, alignSelf: 'center', marginBottom: 20 },
   totalText: { fontSize: 18, fontWeight: '600', color: '#2C2C2C' },
   toggleContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
