@@ -28,6 +28,32 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+router.get('/email/:email', async (req, res) => {
+    try {
+        const usuario = await Usuario.findOne({ email: req.params.email });
+        if (!usuario) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        res.json(usuario);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener el usuario' });
+    }
+})
+
+router.get('/nombre/:nombre', async (req, res) => {
+    try {
+        const usuario = await Usuario.findOne({ nombre: req.params.nombre });
+        if (!usuario) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        res.json(usuario);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener el usuario' });
+    }
+})
+
 router.post('/', async (req, res) => {
     try {
         const usuario = await Usuario.create(req.body);
