@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { authService } from '../services/AuthService';
 
 const COMMON_ACCOUNT = ({ navigation }) => {
   return (

@@ -7,7 +7,7 @@ export const signUpService = {
   // Registro de usuario real
   async sign_up(username, email, password) {
     try {
-      const response = await apiCall('/usuario', 'POST', {
+      const response = await apiCall('usuario', 'POST', {
         nombre: username,
         correo: email,
         contrasena: password,

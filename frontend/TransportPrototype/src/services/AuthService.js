@@ -35,7 +35,7 @@ export const authService = {
     // 2. Si no se encuentra localmente, buscar en la base de datos
     try {
       // Intentar buscar por email
-      const response = await apiCall(`/usuario/email/${identifier}`, 'GET');
+      const response = await apiCall(`usuario/email/${identifier}`, 'GET');
       
       if (response && response.contraseña === password) {
         // Usuario encontrado y contraseña correcta
@@ -51,7 +51,7 @@ export const authService = {
       }
       
       // Si no es email, intentar buscar por nombre
-      const responseByName = await apiCall(`/usuario/nombre/${identifier}`, 'GET');
+      const responseByName = await apiCall(`usuario/nombre/${identifier}`, 'GET');
       
       if (responseByName && responseByName.contraseña === password) {
         const dbUser = {
