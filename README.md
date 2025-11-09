@@ -149,9 +149,11 @@ cd frontend
 npx expo start
 ```
 
-Team MembersRoleMember(s)
-BackendJosé Luis Floreano Hernández, Alejandro Román Salazar Bravo
-FrontendLeonardo Martínez Contreras, Álvaro Alexander Velázquez Matus
+Team MembersRoleMember(s):
+
+- **Backend**: José Luis Floreano Hernández, Alejandro Román Salazar Bravo
+
+- **Frontend**: Leonardo Martínez Contreras, Álvaro Alexander Velázquez Matus
 
 
 
