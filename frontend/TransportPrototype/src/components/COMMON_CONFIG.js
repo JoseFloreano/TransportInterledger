@@ -29,13 +29,10 @@ const COMMON_CONFIG = ({ navigation }) => {
     
     if (user.rol === 'common') {
       newRole = 'seller';
-      targetScreen = 'SELLER_CONFIG';
+      targetScreen = 'SERVICE_ACCOUNT';
     } else if (user.rol === 'seller') {
-      newRole = 'buyer';
-      targetScreen = 'BUYER_CONFIG';
-    } else if (user.rol === 'buyer') {
       newRole = 'common';
-      targetScreen = 'COMMON_CONFIG';
+      targetScreen = 'COMMON_ACCOUNT';
     }
 
     // Confirmar el cambio

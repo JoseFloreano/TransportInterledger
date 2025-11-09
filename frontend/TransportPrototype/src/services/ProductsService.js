@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 import { apiCall } from './APICall';
 import { authService } from './AuthService';
 
@@ -8,7 +9,7 @@ export const insertProduct = async (name, price) => {
     return { success: false };
   }
 
-  usuario = await authService.getCurrentUser();
+  const usuario = await authService.getCurrentUser();
 
   const producto = {
     id_usuario: usuario._id,
@@ -32,7 +33,7 @@ export const insertProduct = async (name, price) => {
 
 export const getProducts = async () => {
   try {
-    const response = await apiCall('/producto', 'GET');
+    const response = await apiCall('producto', 'GET');
     console.log('Products fetched:', response);
     return { success: true, data: response };
     
