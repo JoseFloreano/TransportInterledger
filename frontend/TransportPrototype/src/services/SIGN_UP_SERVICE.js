@@ -2,7 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiCall } from './APICall';
 
-export const signUpService = {
+export const sign_service = {
 
   // Registro de usuario real
   async sign_up(username, email, password) {
@@ -20,9 +20,9 @@ export const signUpService = {
 
       // Guardar sesión localmente
       const newUser = {
-        correo: response.user.correo,
-        nombre: response.user.nombre,
-        rol: response.user.rol,
+        correo: response.correo,
+        nombre: response.nombre,
+        rol: response.rol,
       };
 
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
@@ -46,7 +46,7 @@ export const signUpService = {
   },
 
   async getCurrentUser() {
-    const user = await AsyncStorage.getItem('user');
+    const user = await AsyncStorage.getItem('usuario');
     return user ? JSON.parse(user) : null;
   }
 };
