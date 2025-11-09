@@ -14,11 +14,11 @@ export const authService = {
     }
   ],
 
-  async login(email, password) {
+  async login(name, password) {
     await new Promise(resolve => setTimeout(resolve, 500));
     
     const account = this.predefinedAccounts.find(
-      acc => acc.email === email && acc.password === password
+      acc => acc.name === name && acc.password === password
     );
     
     if (account) {

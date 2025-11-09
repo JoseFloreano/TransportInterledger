@@ -21,7 +21,7 @@ const LoginScreen = ({ navigation }) => {
       if (result.success) {
         Alert.alert('Éxito', `Bienvenido ${result.user.name}`);
         // Navegar a la pantalla principal
-        navigation.replace('Wallets'); // o la pantalla que corresponda
+        navigation.replace('Wallets');
       } else {
         Alert.alert('Error', result.error);
       }
