@@ -28,7 +28,7 @@ const COMMON_CONFIG = ({ navigation }) => {
         </View>
         <View style={styles.fieldRow}>
           <Text style={styles.fieldLabel}>common</Text>
-          <TouchableOpacity><Text style={styles.changeText}>change</Text></TouchableOpacity>
+          <TouchableOpacity><Text style={styles.changeText} >change</Text></TouchableOpacity>
         </View>
       </View>
     </View>
