@@ -4,7 +4,6 @@ import QRCode from 'react-native-qrcode-svg';
 import { cartService } from '../services/CartService';
 import { getProducts } from '../services/ProductsService';
 import { qrService } from '../services/qrService';
-import { paymentService } from '../services/PaymentService';
 import { getDefaultWallet } from '../services/WalletService';
 
 const SERVICE_QR_PAY = ({ navigation }) => {
@@ -17,21 +16,34 @@ const SERVICE_QR_PAY = ({ navigation }) => {
       loadCartData();
     });
 
+    // Cargar al montar el componente también
+    loadCartData();
+
     return unsubscribe;
   }, [navigation]);
 
   const loadCartData = async () => {
-    // Verificar wallet
-    const walletResult = await getDefaultWallet();
-    setHasWallet(walletResult.success && walletResult.data);
+    try {
+      console.log('Cargando datos del carrito...');
 
-    // Calcular total del carrito
-    const cart = await cartService.getCart();
-    const result = await getProducts();
-    
-    if (result.success && result.data) {
-      let total = 0;
+      // 1. Verificar wallet primero
+      const walletResult = await getDefaultWallet();
+      const hasDefaultWallet = walletResult.success && walletResult.data;
+      setHasWallet(hasDefaultWallet);
       
+      console.log('Wallet encontrada:', hasDefaultWallet);
+      console.log('Wallet URL:', walletResult.data?.url);
+
+      // 2. Calcular total del carrito
+      const cart = await cartService.getCart();
+      const result = await getProducts();
+      
+      if (!result.success || !result.data) {
+        console.log('No se pudieron cargar los productos');
+        return;
+      }
+
+      let total = 0;
       result.data.forEach(product => {
         const amount = cart[product._id] || 0;
         if (amount > 0) {
@@ -39,22 +51,26 @@ const SERVICE_QR_PAY = ({ navigation }) => {
         }
       });
       
+      console.log('Total del carrito:', total);
       setCartTotal(total);
       
-      // Generar QR de pago si hay productos y wallet
-      if (total > 0 && hasWallet) {
-        const paymentQRResult = await paymentService.generatePaymentQR();
+      // 3. Generar QR si hay productos Y wallet
+      if (total > 0 && hasDefaultWallet && walletResult.data) {
+        console.log('Generando QR de pago...');
         
-        if (paymentQRResult.success) {
-          const qrContent = qrService.generatePaymentQR(
-            paymentQRResult.data.amount,
-            paymentQRResult.data.receivingWalletUrl
-          );
-          setQrData(qrContent);
-        }
+        const qrContent = qrService.generatePaymentQR(
+          total.toFixed(2),
+          walletResult.data.url
+        );
+        
+        console.log('QR generado:', qrContent);
+        setQrData(qrContent);
       } else {
+        console.log('No se genera QR - Total:', total, 'Wallet:', hasDefaultWallet);
         setQrData('');
       }
+    } catch (error) {
+      console.error('Error cargando datos del carrito:', error);
     }
   };
 
