@@ -26,7 +26,7 @@ app.use(cors({
 app.use(express.json());
 
 // Conexión a MongoDB
-mongoose.connect("mongodb+srv://jlfloreano64_db_user:P0GvYpPKQbRabdTu@cluster1.pu2hsbs.mongodb.net/")
+mongoose.connect("url")
     .then(() => console.log("✅ Conectado a MongoDB"))
     .catch(err => console.error("❌ Error de conexión:", err));
 
