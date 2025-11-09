@@ -25,7 +25,7 @@ export const insertWallet = async (name, url, tipo) => {
     };
 
     console.log('Enviando wallet:', wallet);
-    console.log('Ruta: /wallets'); // Verifica que esta sea tu ruta correcta
+    console.log('Ruta: /wallet'); // Verifica que esta sea tu ruta correcta
     
     const response = await apiCall('wallets', 'POST', wallet);
     console.log('Respuesta del servidor:', response);
@@ -58,7 +58,7 @@ export const getWallets = async () => {
     }
 
     console.log('Obteniendo wallets...');
-    const response = await apiCall('wallets', 'GET');
+    const response = await apiCall('wallet', 'GET');
     console.log('Wallets obtenidas:', response);
     
     // Filtrar wallets del usuario actual
@@ -76,7 +76,7 @@ export const getWallets = async () => {
 
 export const updateWallet = async (id, updates) => {
   try {
-    const response = await apiCall(`wallets/${id}`, 'PUT', updates);
+    const response = await apiCall(`wallet/${id}`, 'PUT', updates);
     Alert.alert('Success', 'Wallet updated successfully!');
     return { success: true, data: response };
   } catch (error) {
@@ -88,7 +88,7 @@ export const updateWallet = async (id, updates) => {
 
 export const deleteWallet = async (id) => {
   try {
-    const response = await apiCall(`wallets/${id}`, 'DELETE');
+    const response = await apiCall(`wallet/${id}`, 'DELETE');
     Alert.alert('Success', 'Wallet deleted successfully!');
     return { success: true, data: response };
   } catch (error) {
