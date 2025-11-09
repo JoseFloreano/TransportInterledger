@@ -15,25 +15,25 @@ import InsertWalletScreen from './src/components/InsertWalletScreen';
 // Pagos
 import PaymentScreen from './src/components/PaymentScreen';
 import Payment2Screen from './src/components/Payment2Screen';
-import PaymentServiceSellScreen from '/src./components/PaymentServiceSellScreen';
-import PaymentServicePayScreen from '/src./components/PaymentServicePayScreen';
-import PaymentCommonQRScreen from '/src./components/PaymentCommonQRScreen';
-import EnterValueScreen from '/src./components/EnterValueScreen';
-import ConfirmTransactionScreen from '/src./components/ConfirmTransactionScreen';
+import PaymentServiceSellScreen from './src/components/PaymentServiceSellScreen';
+import PaymentServicePayScreen from './src/components/PaymentServicePayScreen';
+import PaymentCommonQRScreen from './src/components/PaymentCommonQRScreen';
+import EnterValueScreen from './src/components/EnterValueScreen';
+import ConfirmTransactionScreen from './src/components/ConfirmTransactionScreen';
 
 // NFC/QR
-import WriteNFCScreen from '/src./components/WriteNFCScreen';
-import ViewQRScreen from '/src./components/ViewQRScreen';
+import WriteNFCScreen from './src/components/WriteNFCScreen';
+import ViewQRScreen from './src/components/ViewQRScreen';
 
 // Productos
-import ProductsScreen from '/src./components/ProductsScreen';
-import InsertProductScreen from '/src./components/InsertProductScreen';
+import ProductsScreen from './src/components/ProductsScreen';
+import InsertProductScreen from './src/components/InsertProductScreen';
 
 // Usuario
-import AccountScreen from '/src./components/AccountScreen';
-import AccountServiceScreen from '/src./components/AccountServiceScreen';
-import ConfigScreen from '/src./components/ConfigScreen';
-import TransactionScreen from '/src./components/TransactionScreen';
+import AccountScreen from './src/components/AccountScreen';
+import AccountServiceScreen from './src/components/AccountServiceScreen';
+import ConfigScreen from './src/components/ConfigScreen';
+import TransactionScreen from './src/components/TransactionScreen';
 
 const Stack = createNativeStackNavigator();
 

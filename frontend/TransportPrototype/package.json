@@ -15,12 +15,11 @@
     "expo-status-bar": "~3.0.8",
     "react": "19.1.0",
     "react-native": "0.81.5",
-<<<<<<< HEAD
-    "react-native-nfc-manager": "^3.17.1"
-=======
+
+    "react-native-nfc-manager": "^3.17.1",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0"
->>>>>>> 0c4f9f45d12584f9712f408e0e077194fae3aacc
+
   },
   "private": true
 }
