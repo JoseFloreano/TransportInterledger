@@ -18,27 +18,30 @@ export const authService = {
   ],
 
   async login(identifier, password) {
-    // Simular llamada a API
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // 1. Buscar primero en cuentas predefinidas
-    const localAccount = this.predefinedAccounts.find(
-      acc => (acc.email === identifier || acc.name === identifier) && acc.password === password
-    );
-    
-    if (localAccount) {
-      await AsyncStorage.setItem('user', JSON.stringify(localAccount));
-      await AsyncStorage.setItem('isAuthenticated', 'true');
-      return { success: true, user: localAccount };
-    }
-    
-    // 2. Si no se encuentra localmente, buscar en la base de datos
     try {
-      // Intentar buscar por email
+      // 1. Buscar primero en cuentas predefinidas
+      const localAccount = this.predefinedAccounts.find(
+        acc => (acc.email === identifier || acc.name === identifier) && acc.password === password
+      );
+      
+      if (localAccount) {
+        await AsyncStorage.setItem('user', JSON.stringify(localAccount));
+        await AsyncStorage.setItem('isAuthenticated', 'true');
+        return { success: true, user: localAccount };
+      }
+      
+      // 2. Simular delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // 3. Intentar buscar por email
       const response = await apiCall(`usuario/email/${identifier}`, 'GET');
       
+      // Verificar si hay error en la respuesta
+      if (response && response.error) {
+        return { success: false, error: response.error };
+      }
+      
       if (response && response.contraseña === password) {
-        // Usuario encontrado y contraseña correcta
         const dbUser = {
           correo: response.correo,
           nombre: response.nombre,
@@ -50,14 +53,19 @@ export const authService = {
         return { success: true, user: dbUser };
       }
       
-      // Si no es email, intentar buscar por nombre
+      // 4. Si no es email, intentar buscar por nombre
       const responseByName = await apiCall(`usuario/nombre/${identifier}`, 'GET');
+      
+      // Verificar si hay error en la respuesta
+      if (responseByName && responseByName.error) {
+        return { success: false, error: responseByName.error };
+      }
       
       if (responseByName && responseByName.contraseña === password) {
         const dbUser = {
-          correo: response.correo,
-          nombre: response.nombre,
-          rol: response.rol || 'common',
+          correo: responseByName.correo,  // ✅ Corregido
+          nombre: responseByName.nombre,   // ✅ Corregido
+          rol: responseByName.rol || 'common', // ✅ Corregido
         };
         
         await AsyncStorage.setItem('user', JSON.stringify(dbUser));
@@ -84,7 +92,7 @@ export const authService = {
   },
 
   async getCurrentUser() {
-    const user = await AsyncStorage.getItem('user');
+    const user = await AsyncStorage.getItem('user'); // ✅ Consistente
     return user ? JSON.parse(user) : null;
   }
 };
