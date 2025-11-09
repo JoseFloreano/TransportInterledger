@@ -1,14 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { cartService } from '../services/CartService';
+import { getProducts } from '../services/ProductsService';
 
 const SERVICE_QR_PAY = ({ navigation }) => {
+  const [cartTotal, setCartTotal] = useState(0);
+
+  useEffect(() => {
+    // Cargar el total cuando la pantalla gana foco
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadCartTotal();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  const loadCartTotal = async () => {
+    const cart = await cartService.getCart();
+    const result = await getProducts();
+    
+    if (result.success && result.data) {
+      let total = 0;
+      result.data.forEach(product => {
+        const amount = cart[product._id] || 0;
+        total += product.precio * amount;
+      });
+      setCartTotal(total);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.nfcButton}>
           <Text style={styles.nfcButtonText}>NFC</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.cartButton} onPress={() => navigation.navigate('SHOPPINGCART_PRODUCTS')} >
+        <TouchableOpacity style={styles.cartButton} onPress={() => navigation.navigate('SHOPPINGCART_PRODUCTS')}>
           <Text style={styles.cartIcon}>🛒</Text>
         </TouchableOpacity>
       </View>
@@ -26,6 +53,14 @@ const SERVICE_QR_PAY = ({ navigation }) => {
             <View style={styles.qrCenter} />
           </View>
         </View>
+        
+        {/* Mostrar total solo si es mayor a 0 */}
+        {cartTotal > 0 && (
+          <View style={styles.totalBadge}>
+            <Text style={styles.totalText}>${cartTotal.toFixed(2)}</Text>
+          </View>
+        )}
+        
         <View style={styles.toggleContainer}>
           <Text style={styles.toggleText}>ME</Text>
           <Text style={styles.arrow}>←</Text>
@@ -36,7 +71,7 @@ const SERVICE_QR_PAY = ({ navigation }) => {
         <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('WALLETS')}>
           <Text style={styles.navIcon}>💳</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress ={() => navigation.navigate('SERVICE_SELL_NFC')}>
+        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('SERVICE_SELL_NFC')}>
           <Text style={styles.navIcon}>🛍️</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('SERVICE_ACCOUNT')}>
@@ -59,12 +94,14 @@ const styles = StyleSheet.create({
   productButton: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#E8E8E8', paddingVertical: 18, paddingHorizontal: 20, borderRadius: 15, marginBottom: 30 },
   productText: { fontSize: 15, color: '#2C2C2C' },
   chevron: { fontSize: 20, color: '#2C2C2C' },
-  qrContainer: { alignItems: 'center', marginBottom: 30 },
+  qrContainer: { alignItems: 'center', marginBottom: 20 },
   qrCode: { width: 200, height: 200, backgroundColor: '#E8E8E8', borderRadius: 20, padding: 30, position: 'relative' },
   qrTopLeft: { position: 'absolute', top: 35, left: 35, width: 40, height: 40, backgroundColor: '#2C2C2C' },
   qrTopRight: { position: 'absolute', top: 35, right: 35, width: 40, height: 40, backgroundColor: '#2C2C2C' },
   qrBottomLeft: { position: 'absolute', bottom: 35, left: 35, width: 40, height: 40, backgroundColor: '#2C2C2C' },
   qrCenter: { position: 'absolute', top: '50%', left: '50%', marginTop: -15, marginLeft: -15, width: 30, height: 30, backgroundColor: '#2C2C2C' },
+  totalBadge: { backgroundColor: '#E8E8E8', paddingVertical: 12, paddingHorizontal: 30, borderRadius: 20, alignSelf: 'center', marginBottom: 20 },
+  totalText: { fontSize: 18, fontWeight: '600', color: '#2C2C2C' },
   toggleContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
   toggleText: { fontSize: 16, fontWeight: '500', color: '#2C2C2C', marginHorizontal: 15 },
   arrow: { fontSize: 24, color: '#2C2C2C' },
