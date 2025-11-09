@@ -58,7 +58,7 @@ export const authService = {
           return { success: false, error: 'Credenciales incorrectas' };
         }
       } catch (nameError) {
-        console.log('⚠️ No encontrado por nombre tampoco');
+        console.log('⚠ No encontrado por nombre tampoco');
       // Continuar al final
       }
       
@@ -86,7 +86,7 @@ export const authService = {
           return { success: false, error: 'Credenciales incorrectas' };
         }
       } catch (emailError) {
-        console.log('⚠️ No encontrado por email (404 o error), intentando por nombre...');
+        console.log('⚠ No encontrado por email (404 o error), intentando por nombre...');
         // No hacer nada, continuar con la búsqueda por nombre
       }
       
