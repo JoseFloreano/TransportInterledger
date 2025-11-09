@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiCall } from './APICall';
 import { authService } from './AuthService';
-import { Usuario } from '../../../../backend/bd/models/Usuario';
 
 export const insertProduct = async (name, price) => {
   if (!name || !price) {
@@ -18,7 +17,7 @@ export const insertProduct = async (name, price) => {
   };
 
   try {
-    const response = await apiCall('/producto', 'POST', producto);
+    const response = await apiCall('producto', 'POST', producto);
     console.log(response);
     
     Alert.alert('Success', 'Product inserted successfully!');
@@ -28,5 +27,18 @@ export const insertProduct = async (name, price) => {
     console.error('Error inserting product:', error);
     Alert.alert('Error', 'Failed to insert product. Please try again.');
     return { success: false, error };
+  }
+};
+
+export const getProducts = async () => {
+  try {
+    const response = await apiCall('/producto', 'GET');
+    console.log('Products fetched:', response);
+    return { success: true, data: response };
+    
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    Alert.alert('Error', 'Failed to load products. Please try again.');
+    return { success: false, error, data: [] };
   }
 };
