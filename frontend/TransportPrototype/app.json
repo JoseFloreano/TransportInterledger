@@ -35,7 +35,8 @@
         {
           "cameraPermission": "Permite escanear códigos QR de productos"
         }
-      ]
+      ],
+      "expo-barcode-scanner"
     ]
   }
 }

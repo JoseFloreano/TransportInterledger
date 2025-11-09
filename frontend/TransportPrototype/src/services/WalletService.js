@@ -129,3 +129,39 @@ export const deleteWallet = async (id) => {
     return { success: false, error };
   }
 };
+
+export const setDefaultWallet = async (walletId) => {
+  try {
+    const usuario = await authService.getCurrentUser();
+    
+    if (!usuario || !usuario._id) {
+      Alert.alert('Error', 'User not authenticated.');
+      return { success: false };
+    }
+
+    // Primero, obtener todas las wallets del usuario
+    const walletsResult = await getWallets();
+    
+    if (!walletsResult.success) {
+      return { success: false };
+    }
+
+    // Quitar default de todas las wallets del usuario
+    for (const wallet of walletsResult.data) {
+      if (wallet._id !== walletId && wallet.default === true) {
+        await apiCall(`wallet/${wallet._id}`, 'PUT', { default: false });
+      }
+    }
+
+    // Establecer la nueva wallet como default
+    const response = await apiCall(`wallet/${walletId}`, 'PUT', { default: true });
+    
+    Alert.alert('Success', 'Default wallet updated!');
+    return { success: true, data: response };
+    
+  } catch (error) {
+    console.error('Error setting default wallet:', error);
+    Alert.alert('Error', 'Failed to set default wallet.');
+    return { success: false, error };
+  }
+};

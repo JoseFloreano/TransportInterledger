@@ -1,41 +1,21 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+import express from 'express';
+const router = express.Router();
 
-// Importa las funciones que has creado en pagar.js
-const { executeInterledgerPayment, continueInterledgerPayment } = require('./pagar.js');
+// Importa las funciones de Interledger
+import { executeInterledgerPayment, continueInterledgerPayment } from './pagar.js';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Valores por defecto
+// Configuración por defecto de Interledger
 const DEFAULT_CONFIG = {
-    privateKey: "private.key",
+    privateKey: "pagos/private.key",
     keyId: "54f2db71-3ac3-4a4c-aaa6-64024929e41a",
     clientWalletUrl: "https://ilp.interledger-test.dev/jlflousd"
 };
 
-// Middleware para procesar JSON y habilitar CORS
-app.use(bodyParser.json());
-app.use(cors());
-
-// Función helper para esperar
-function esperar(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// ---
-// Ruta 1: Inicia el proceso de pago y obtiene la URL de aprobación si es necesaria
-// ---
-app.post('/api/payment/start', async (req, res) => {
+// Ruta 1: Inicia el pago
+router.post('/start', async (req, res) => {
     try {
-        const {
-            value,
-            sendingWalletUrl,
-            receivingWalletUrl
-        } = req.body;
+        const { value, sendingWalletUrl, receivingWalletUrl } = req.body;
 
-        // Validar parámetros requeridos
         if (!value || !sendingWalletUrl || !receivingWalletUrl) {
             return res.status(400).json({
                 success: false,
@@ -81,14 +61,11 @@ app.post('/api/payment/start', async (req, res) => {
     }
 });
 
-// ---
-// Ruta 2: Continúa el proceso de pago después de que el usuario lo aprueba en su navegador
-// ---
-app.post('/api/payment/continue', async (req, res) => {
+// Ruta 2: Continúa el pago
+router.post('/continue', async (req, res) => {
     try {
         const { continueUri, continueAccessToken, quoteId, sendingWalletUrl } = req.body;
         
-        // Validar parámetros requeridos
         if (!continueUri || !continueAccessToken || !quoteId || !sendingWalletUrl) {
             return res.status(400).json({
                 success: false,
@@ -98,7 +75,6 @@ app.post('/api/payment/continue', async (req, res) => {
         
         console.log('Intentando continuar el pago...');
         
-        // Usar las credenciales por defecto
         const resultado = await continueInterledgerPayment({
             continueUri,
             continueAccessToken,
@@ -110,14 +86,12 @@ app.post('/api/payment/continue', async (req, res) => {
         
         console.log('Respuesta de continueInterledgerPayment:', resultado);
         
-        // Extraer información de montos del outgoingPayment si está disponible
         let paymentDetails = {
             success: true,
             message: resultado.message || 'Pago realizado exitosamente',
             details: resultado.details || 'Pago completado'
         };
 
-        // Si hay información del outgoingPayment, extraer los montos
         if (resultado.outgoingPayment) {
             paymentDetails.outgoingPayment = {
                 ...resultado.outgoingPayment,
@@ -136,10 +110,7 @@ app.post('/api/payment/continue', async (req, res) => {
             description: error.description
         });
        
-        // Manejo específico para diferentes tipos de errores de grant
         if (error.status === 401 || error.code === 'request_denied') {
-           
-            // Verificar descripción específica del error
             if (error.description === 'grant cannot be continued' ||
                 error.message?.includes('grant cannot be continued') ||
                 error.message?.includes('already been used')) {
@@ -153,7 +124,6 @@ app.post('/api/payment/continue', async (req, res) => {
                 });
             }
            
-            // Otros errores 401 podrían ser grants expirados después de pago exitoso
             if (error.message?.includes('unauthorized') || error.message?.includes('expired')) {
                 console.log('Grant expirado - posiblemente después de pago exitoso');
                 return res.json({
@@ -165,7 +135,6 @@ app.post('/api/payment/continue', async (req, res) => {
             }
         }
        
-        // Para errores 400 que podrían indicar estado de pago
         if (error.status === 400) {
             console.log('Error 400 - verificando si es relacionado con estado del pago');
             return res.json({
@@ -178,7 +147,6 @@ app.post('/api/payment/continue', async (req, res) => {
             });
         }
         
-        // Para otros errores, devolver información detallada
         res.json({
             success: false,
             error: error.message || 'Error desconocido en el pago',
@@ -189,10 +157,8 @@ app.post('/api/payment/continue', async (req, res) => {
     }
 });
 
-// ---
-// Ruta 3: Verifica el estado del pago sin errores si aún no está aprobado
-// ---
-app.post('/api/payment/check-status', async (req, res) => {
+// Ruta 3: Verifica estado del pago
+router.post('/check-status', async (req, res) => {
     try {
         const { continueUri, continueAccessToken, quoteId, sendingWalletUrl } = req.body;
         
@@ -217,10 +183,7 @@ app.post('/api/payment/check-status', async (req, res) => {
             
             console.log('Resultado de continueInterledgerPayment:', resultado);
             
-            // CRÍTICO: Verificar que realmente tengamos un pago exitoso
-            // No confiar solo en resultado.success, verificar que tenga outgoingPayment
             if (resultado.success && resultado.outgoingPayment) {
-                // Pago realmente completado con datos
                 let paymentDetails = {
                     success: true,
                     completed: true,
@@ -235,7 +198,6 @@ app.post('/api/payment/check-status', async (req, res) => {
                 
                 return res.json(paymentDetails);
             } else if (resultado.success && !resultado.outgoingPayment) {
-                // Success sin datos de pago - probablemente es un falso positivo
                 console.log('ADVERTENCIA: Success sin outgoingPayment - posible pago pendiente');
                 return res.json({
                     success: false,
@@ -254,7 +216,6 @@ app.post('/api/payment/check-status', async (req, res) => {
                 description: error.description
             });
             
-            // Si el error indica que el grant ya fue usado, el pago se completó
             if (error.message?.includes('already been used') ||
                 error.description?.includes('already been used')) {
                 console.log('Grant ya usado - pago completado anteriormente');
@@ -266,10 +227,7 @@ app.post('/api/payment/check-status', async (req, res) => {
                 });
             }
             
-            // Si es 401 o request_denied, verificar si es porque aún no se aprueba
             if (error.status === 401 || error.code === 'request_denied') {
-                
-                // Verificar mensajes específicos que indican pendiente
                 if (error.description?.includes('grant cannot be continued') ||
                     error.message?.includes('grant cannot be continued') ||
                     error.message?.includes('unauthorized') ||
@@ -287,7 +245,6 @@ app.post('/api/payment/check-status', async (req, res) => {
                 }
             }
             
-            // Error 400 generalmente indica problema con el grant o pago
             if (error.status === 400) {
                 console.log('Error 400 - problema con el pago');
                 return res.json({
@@ -300,7 +257,6 @@ app.post('/api/payment/check-status', async (req, res) => {
                 });
             }
             
-            // Otro tipo de error - reportarlo
             console.error('Error inesperado:', error);
             return res.status(500).json({
                 success: false,
@@ -322,11 +278,4 @@ app.post('/api/payment/check-status', async (req, res) => {
     }
 });
 
-// Inicia el servidor para que se quede escuchando
-app.listen(PORT, () => {
-    console.log(`Servidor de API escuchando en el puerto ${PORT}`);
-    console.log(`Rutas disponibles:`);
-    console.log(`  POST /api/payment/start - Inicia el pago`);
-    console.log(`  POST /api/payment/continue - Continúa el pago después de aprobación`);
-    console.log(`  POST /api/payment/check-status - Verifica estado sin errores si está pending`);
-});
+export default router;
