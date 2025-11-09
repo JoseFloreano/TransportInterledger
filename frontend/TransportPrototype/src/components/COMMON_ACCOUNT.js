@@ -39,7 +39,7 @@ const COMMON_ACCOUNT = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.menuItemLast}
-          onPress={() => handleLogOut()}        
+          onPress={() => handleLogout()}        
         >
           <Text style={styles.menuText}>close session</Text>
         </TouchableOpacity>
