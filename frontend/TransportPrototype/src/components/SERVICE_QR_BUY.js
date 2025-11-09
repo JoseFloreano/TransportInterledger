@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Alert } from 'react-native';
-import { Camera } from 'expo-camera';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { Camera, CameraType } from 'expo-camera'; // Importación correcta, ahora incluye CameraType
 import { qrService } from '../services/qrService';
 
 const SERVICE_QR_BUY = ({ navigation }) => {
@@ -11,11 +10,13 @@ const SERVICE_QR_BUY = ({ navigation }) => {
 
   useEffect(() => {
     if (showCamera) {
+      // Solicitamos permiso usando la función de expo-camera
       requestCameraPermission();
     }
   }, [showCamera]);
 
   const requestCameraPermission = async () => {
+    // Usamos el método de Camera para solicitar permisos
     const { status } = await Camera.requestCameraPermissionsAsync();
     setHasPermission(status === 'granted');
   };
@@ -31,7 +32,8 @@ const SERVICE_QR_BUY = ({ navigation }) => {
   };
 
   const handleBarCodeScanned = async ({ type, data }) => {
-    setScanned(true);
+    if (scanned) return; // Prevenir múltiples escaneos
+    setScanned(true); 
     
     try {
       // Validar QR
@@ -41,7 +43,7 @@ const SERVICE_QR_BUY = ({ navigation }) => {
         return;
       }
 
-      // Parsear datos del QR (puede ser información del carrito)
+      // Parsear datos del QR
       const cartData = qrService.parseQRData(data);
 
       // Cerrar cámara y mostrar información
@@ -148,11 +150,9 @@ const SERVICE_QR_BUY = ({ navigation }) => {
           ) : (
             <Camera
               style={styles.camera}
-              type={Camera.Constants.Type.back}
+              type={CameraType.back} // Usamos CameraType.back, eliminando .Constants
               onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-              barCodeScannerSettings={{
-                barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-              }}
+              // Se eliminan barCodeScannerSettings ya que la detección de códigos de barras es la configuración por defecto
             >
               <View style={styles.cameraOverlay}>
                 <View style={styles.topOverlay}>
@@ -175,7 +175,7 @@ const SERVICE_QR_BUY = ({ navigation }) => {
 
                 <View style={styles.bottomOverlay}>
                   <Text style={styles.instructionText}>
-                    Apunta la cámara al código QR del carrito
+                    Apúntale al código QR del carrito
                   </Text>
                   {scanned && (
                     <Text style={styles.processingText}>Procesando...</Text>
