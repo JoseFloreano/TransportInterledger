@@ -41,6 +41,19 @@ async function apiCall(endpoint, method = 'GET', body = null) {
 async function probarIntegracionCompleta(){
     const res = await apiCall('/health');
     console.log(res);
-}
+
+    const usuario_ejemplo = {
+        "correo": "1@1.com",
+        "contrasena": "1234",
+        "nombre": "Ejemplo",
+        "rol": "seller"
+    };
+
+    const res2 = await apiCall('/usuario', 'POST', usuario_ejemplo);
+    console.log(res2);
+
+    const res3 = await apiCall('/usuario', 'GET');
+    console.log(res3);
+    }
 
 probarIntegracionCompleta();
