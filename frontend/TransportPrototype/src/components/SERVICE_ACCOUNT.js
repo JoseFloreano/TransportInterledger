@@ -36,7 +36,7 @@ const SERVICE_ACCOUNT = ({ navigation }) => {
         <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('WALLETS')}>
           <Text style={styles.navIcon}>💳</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton}>
+        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('SERVICE_QR_PAY')}>
           <Text style={styles.navIcon}>🛍️</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton}>
