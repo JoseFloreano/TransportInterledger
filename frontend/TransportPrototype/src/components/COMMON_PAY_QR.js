@@ -1,28 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Alert } from 'react-native';
-import { Camera, CameraType } from 'expo-camera'; // Importación correcta, ahora incluye CameraType
-import { qrService } from '../services/qrService'; // Se asume que esta ruta es correcta
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import { qrService } from '../services/qrService';
 
 const COMMON_PAY_QR = ({ navigation }) => {
   const [showCamera, setShowCamera] = useState(false);
-  const [hasPermission, setHasPermission] = useState(null);
+  const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
-  useEffect(() => {
-    if (showCamera) {
-      // Usamos requestCameraPermissionsAsync directamente de expo-camera
-      requestCameraPermission(); 
+  const handleOpenCamera = async () => {
+    if (!permission?.granted) {
+      const result = await requestPermission();
+      if (!result.granted) {
+        Alert.alert('Permiso denegado', 'Necesitas habilitar la cámara en configuración');
+        return;
+      }
     }
-  }, [showCamera]);
-
-  const requestCameraPermission = async () => {
-    // Solicitamos permiso para la CÁMARA. 
-    // La detección de códigos de barras está incluida en el permiso de la cámara en este SDK.
-    const { status } = await Camera.requestCameraPermissionsAsync();
-    setHasPermission(status === 'granted');
-  };
-
-  const handleOpenCamera = () => {
     setShowCamera(true);
     setScanned(false);
   };
@@ -32,52 +25,39 @@ const COMMON_PAY_QR = ({ navigation }) => {
     setScanned(false);
   };
 
-  const handleBarCodeScanned = async ({ type, data }) => {
-    // Si ya se escaneó y estamos esperando el procesamiento, salimos
-    if (scanned) return; 
-    
-    setScanned(true); // Bloquear nuevos escaneos inmediatamente
+  const handleBarCodeScanned = async ({ data }) => {
+    if (scanned) return;
+    setScanned(true);
     
     try {
-      // Validar QR
       if (!qrService.isValidQR(data)) {
         Alert.alert('QR Inválido', 'El código QR no contiene información válida del producto');
-        setScanned(false); // Permitir escanear de nuevo
+        setScanned(false);
         return;
       }
 
-      // Parsear datos del producto
       const productData = qrService.parseQRData(data);
 
-      // Verificar stock
       if (productData.stock <= 0) {
         Alert.alert('Sin stock', 'Este producto no está disponible');
-        handleCloseCamera(); // Cerrar cámara
+        handleCloseCamera();
         return;
       }
 
-      // Cerrar cámara y mostrar información del producto
       handleCloseCamera();
       
       Alert.alert(
         'Producto escaneado',
         `${productData.name}\nPrecio: $${productData.price.toFixed(2)}\nStock disponible: ${productData.stock}`,
         [
-          {
-            text: 'Escanear otro',
-            // Al presionar, se reabre la cámara y se resetea el estado `scanned`
-            onPress: handleOpenCamera 
-          },
-          {
-            text: 'OK',
-            style: 'cancel'
-          }
+          { text: 'Escanear otro', onPress: handleOpenCamera },
+          { text: 'OK', style: 'cancel' }
         ]
       );
     } catch (error) {
       console.error('Error processing QR:', error);
       Alert.alert('Error', 'No se pudo procesar el código QR');
-      setScanned(false); // Permitir escanear de nuevo
+      setScanned(false);
     }
   };
 
@@ -124,18 +104,13 @@ const COMMON_PAY_QR = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Modal de Cámara */}
       <Modal
         visible={showCamera}
         animationType="slide"
         onRequestClose={handleCloseCamera}
       >
         <View style={styles.modalContainer}>
-          {hasPermission === null ? (
-            <View style={styles.permissionContainer}>
-              <Text style={styles.permissionText}>Solicitando permisos de cámara...</Text>
-            </View>
-          ) : hasPermission === false ? (
+          {!permission?.granted ? (
             <View style={styles.permissionContainer}>
               <Text style={styles.permissionText}>Sin acceso a la cámara</Text>
               <Text style={styles.permissionSubtext}>
@@ -149,12 +124,10 @@ const COMMON_PAY_QR = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           ) : (
-            <Camera
+            <CameraView
               style={styles.camera}
-              type={CameraType.back} // Usamos CameraType.back, eliminando .Constants
-              onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-              // ELIMINAMOS barCodeScannerSettings porque la detección de QR es la configuración por defecto
-              // al usar onBarCodeScanned en Camera en el SDK 54.
+              facing="back"
+              onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
             >
               <View style={styles.cameraOverlay}>
                 <View style={styles.topOverlay}>
@@ -177,14 +150,14 @@ const COMMON_PAY_QR = ({ navigation }) => {
 
                 <View style={styles.bottomOverlay}>
                   <Text style={styles.instructionText}>
-                    Apúntale al código QR del producto
+                    Apunta al código QR del producto
                   </Text>
                   {scanned && (
                     <Text style={styles.processingText}>Procesando...</Text>
                   )}
                 </View>
               </View>
-            </Camera>
+            </CameraView>
           )}
         </View>
       </Modal>
@@ -269,7 +242,6 @@ const styles = StyleSheet.create({
     fontSize: 28 
   },
   
-  // Estilos del Modal de Cámara
   modalContainer: {
     flex: 1,
     backgroundColor: '#000',

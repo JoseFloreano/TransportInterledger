@@ -1,27 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Alert } from 'react-native';
-import { Camera, CameraType } from 'expo-camera'; // Importación correcta, ahora incluye CameraType
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { qrService } from '../services/qrService';
 
 const SERVICE_QR_BUY = ({ navigation }) => {
   const [showCamera, setShowCamera] = useState(false);
-  const [hasPermission, setHasPermission] = useState(null);
+  const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
-  useEffect(() => {
-    if (showCamera) {
-      // Solicitamos permiso usando la función de expo-camera
-      requestCameraPermission();
+  const handleOpenCamera = async () => {
+    if (!permission?.granted) {
+      const result = await requestPermission();
+      if (!result.granted) {
+        Alert.alert('Permiso denegado', 'Necesitas habilitar la cámara en configuración');
+        return;
+      }
     }
-  }, [showCamera]);
-
-  const requestCameraPermission = async () => {
-    // Usamos el método de Camera para solicitar permisos
-    const { status } = await Camera.requestCameraPermissionsAsync();
-    setHasPermission(status === 'granted');
-  };
-
-  const handleOpenCamera = () => {
     setShowCamera(true);
     setScanned(false);
   };
@@ -31,36 +25,26 @@ const SERVICE_QR_BUY = ({ navigation }) => {
     setScanned(false);
   };
 
-  const handleBarCodeScanned = async ({ type, data }) => {
-    if (scanned) return; // Prevenir múltiples escaneos
-    setScanned(true); 
+  const handleBarCodeScanned = async ({ data }) => {
+    if (scanned) return;
+    setScanned(true);
     
     try {
-      // Validar QR
       if (!qrService.isValidQR(data)) {
         Alert.alert('QR Inválido', 'El código QR no contiene información válida del carrito');
         setScanned(false);
         return;
       }
 
-      // Parsear datos del QR
       const cartData = qrService.parseQRData(data);
-
-      // Cerrar cámara y mostrar información
       handleCloseCamera();
       
       Alert.alert(
         'QR escaneado',
         `Información del carrito recibida\nTotal: $${cartData.total || '0.00'}`,
         [
-          {
-            text: 'Escanear otro',
-            onPress: handleOpenCamera
-          },
-          {
-            text: 'OK',
-            style: 'cancel'
-          }
+          { text: 'Escanear otro', onPress: handleOpenCamera },
+          { text: 'OK', style: 'cancel' }
         ]
       );
     } catch (error) {
@@ -110,9 +94,7 @@ const SERVICE_QR_BUY = ({ navigation }) => {
         >
           <Text style={styles.navIcon}>💳</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.navButton, styles.navButtonActive]}
-        >
+        <TouchableOpacity style={[styles.navButton, styles.navButtonActive]}>
           <Text style={styles.navIcon}>🛍️</Text>
         </TouchableOpacity>
         <TouchableOpacity 
@@ -123,43 +105,31 @@ const SERVICE_QR_BUY = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Modal de Cámara */}
       <Modal
         visible={showCamera}
         animationType="slide"
         onRequestClose={handleCloseCamera}
       >
         <View style={styles.modalContainer}>
-          {hasPermission === null ? (
-            <View style={styles.permissionContainer}>
-              <Text style={styles.permissionText}>Solicitando permisos de cámara...</Text>
-            </View>
-          ) : hasPermission === false ? (
+          {!permission?.granted ? (
             <View style={styles.permissionContainer}>
               <Text style={styles.permissionText}>Sin acceso a la cámara</Text>
               <Text style={styles.permissionSubtext}>
-                Por favor permite el acceso a la cámara en la configuración
+                Por favor permite el acceso a la cámara
               </Text>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={handleCloseCamera}
-              >
+              <TouchableOpacity style={styles.closeButton} onPress={handleCloseCamera}>
                 <Text style={styles.closeButtonText}>Cerrar</Text>
               </TouchableOpacity>
             </View>
           ) : (
-            <Camera
+            <CameraView
               style={styles.camera}
-              type={CameraType.back} // Usamos CameraType.back, eliminando .Constants
-              onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-              // Se eliminan barCodeScannerSettings ya que la detección de códigos de barras es la configuración por defecto
+              facing="back"
+              onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
             >
               <View style={styles.cameraOverlay}>
                 <View style={styles.topOverlay}>
-                  <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={handleCloseCamera}
-                  >
+                  <TouchableOpacity style={styles.backButton} onPress={handleCloseCamera}>
                     <Text style={styles.backButtonText}>✕ Cerrar</Text>
                   </TouchableOpacity>
                 </View>
@@ -175,14 +145,14 @@ const SERVICE_QR_BUY = ({ navigation }) => {
 
                 <View style={styles.bottomOverlay}>
                   <Text style={styles.instructionText}>
-                    Apúntale al código QR del carrito
+                    Apunta al código QR del carrito
                   </Text>
                   {scanned && (
                     <Text style={styles.processingText}>Procesando...</Text>
                   )}
                 </View>
               </View>
-            </Camera>
+            </CameraView>
           )}
         </View>
       </Modal>
