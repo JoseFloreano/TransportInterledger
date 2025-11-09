@@ -22,13 +22,20 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "NFC",
         "NFC"
       ],
       "package": "com.anonymous.TransportPrototype"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permite escanear códigos QR de productos"
+        }
+      ]
+    ]
   }
 }
