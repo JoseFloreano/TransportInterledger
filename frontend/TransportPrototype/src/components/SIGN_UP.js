@@ -1,14 +1,41 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { sign_service } from '../services/SIGN_UP_SERVICE';
 
 const SIGN_UP = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     console.log('Sign up');
+    if((!username || !email || !password) && (password === confirmPassword)){
+      Alert.alert('Error', 'Por favor ingresa usuario y contraseña y deben coincidir');
+            return;
+    }
+    
+      setLoading(true);
+        
+        try {
+          const result = await sign_service.sign_up(username,email,password);
+          
+          if (result.success) {
+            Alert.alert('Éxito', `Registrado ${result.user.nombre}`);
+    
+            // Navegar a la pantalla principal
+            navigation.replace('WALLETS');
+            console.log("SIGN UP")
+          } else {
+            Alert.alert('Error', result.error);
+          }
+        } catch (error) {
+          Alert.alert('Error', 'Ocurrió un error al iniciar sesión');
+        } finally {
+          setLoading(false);
+        }
   };
 
   const handleSelectPhoto = () => {
