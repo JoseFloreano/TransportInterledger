@@ -4,7 +4,7 @@ import { getDefaultWallet } from './WalletService';
 import { cartService } from './CartService';
 import { getProducts } from './ProductsService';
 
-const PAYMENT_API_URL = 'http://localhost:3000'; // Cambia según tu configuración
+const PAYMENT_API_URL = 'https://096a0eaaea59.ngrok-free.app'; // Cambia según tu configuración
 
 export const paymentService = {
   // Iniciar pago (seller side)
