@@ -4,24 +4,24 @@ import { apiCall } from './APICall';
 export const authService = {
   predefinedAccounts: [
     {
-      email: 'usuario1@ejemplo.com',
-      password: 'password123',
+      correo: 'usuario1@ejemplo.com',
+      contrasena: 'password123',
       name: 'Usuario Uno',
       rol: 'common'
     },
     {
-      email: 'usuario2@ejemplo.com',
-      password: 'password456',
+      correo: 'usuario2@ejemplo.com',
+      contrasena: 'password456',
       name: 'Usuario Dos',
       rol: 'buyer'
     }
   ],
 
-  async login(identifier, password) {
+  async login(identifier, contrasena) {
     try {
       // 1. Buscar primero en cuentas predefinidas
       const localAccount = this.predefinedAccounts.find(
-        acc => (acc.email === identifier || acc.name === identifier) && acc.password === password
+        acc => (acc.correo === identifier || acc.nombre === identifier) && acc.contrasena === contrasena
       );
       
       if (localAccount) {
@@ -41,7 +41,7 @@ export const authService = {
         return { success: false, error: response.error };
       }
       
-      if (response && response.contraseña === password) {
+      if (response && response.contrasena === contrasena) {
         const dbUser = {
           correo: response.correo,
           nombre: response.nombre,
@@ -61,7 +61,7 @@ export const authService = {
         return { success: false, error: responseByName.error };
       }
       
-      if (responseByName && responseByName.contraseña === password) {
+      if (responseByName && responseByName.contrasena === contrasena) {
         const dbUser = {
           correo: responseByName.correo,  // ✅ Corregido
           nombre: responseByName.nombre,   // ✅ Corregido
@@ -92,7 +92,7 @@ export const authService = {
   },
 
   async getCurrentUser() {
-    const user = await AsyncStorage.getItem('user'); // ✅ Consistente
+    const user = await AsyncStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   }
 };
