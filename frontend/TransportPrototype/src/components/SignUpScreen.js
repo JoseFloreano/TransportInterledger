@@ -10,6 +10,7 @@ const SignUpScreen = ({ navigation }) => {
   const handleSignUp = () => {
     // Lógica de registro
     console.log('Sign up pressed');
+    navigation.navigate('Wallets')
   };
 
   const handleSelectPhoto = () => {
@@ -81,7 +82,7 @@ const SignUpScreen = ({ navigation }) => {
           style={styles.signUpButton}
           onPress={handleSignUp}
         >
-          <Text style={styles.signUpButtonText}>SING UP</Text>
+          <Text style={styles.signUpButtonText}>SIGN UP</Text>
         </TouchableOpacity>
       </View>
     </View>
