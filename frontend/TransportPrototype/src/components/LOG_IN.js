@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { authService } from '../services/AuthService';
 
-const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('');
+const LOG_IN = ({ navigation }) => {
+  const [identifier, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!username || !password) {
+    if (!identifier || !password) {
       Alert.alert('Error', 'Por favor ingresa usuario y contraseña');
       return;
     }
@@ -16,12 +16,12 @@ const LoginScreen = ({ navigation }) => {
     setLoading(true);
     
     try {
-      const result = await authService.login(username, password);
+      const result = await authService.login(identifier, password);
       
       if (result.success) {
-        Alert.alert('Éxito', `Bienvenido ${result.user.name}`);
+        Alert.alert('Éxito', `Bienvenido ${result.user.nombre}`);
         // Navegar a la pantalla principal
-        navigation.replace('Wallets');
+        navigation.replace('WALLETS');
         console.log("LOG IN")
       } else {
         Alert.alert('Error', result.error);
@@ -49,7 +49,7 @@ const LoginScreen = ({ navigation }) => {
           style={styles.input}
           placeholder="username/email"
           placeholderTextColor="#666"
-          value={username}
+          value={identifier}
           onChangeText={setUsername}
           autoCapitalize="none"
         />
