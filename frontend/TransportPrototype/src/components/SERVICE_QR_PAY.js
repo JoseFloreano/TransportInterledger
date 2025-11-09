@@ -39,7 +39,7 @@ const SERVICE_QR_PAY = ({ navigation }) => {
           <Text style={styles.cartIcon}>🛒</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.appName}>NOMBRE APP</Text>
+      <Text style={styles.appName}>Tap&Pay</Text>
       <View style={styles.content}>
         <TouchableOpacity style={styles.productButton} onPress={() => navigation.navigate('PRODUCTS')}>
           <Text style={styles.productText}>product</Text>

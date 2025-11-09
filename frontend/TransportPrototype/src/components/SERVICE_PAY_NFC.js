@@ -9,7 +9,7 @@ const SERVICE_PAY_NFC = ({ navigation }) => {
           <Text style={styles.qrButtonText}>QR</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.appName}>NOMBRE APP</Text>
+      <Text style={styles.appName}>Tap&Pay</Text>
       <View style={styles.content}>
         <View style={styles.messageContainer}>
           <Text style={styles.message}>Please bring your{'\n'}phone closer to{'\n'}the device.</Text>

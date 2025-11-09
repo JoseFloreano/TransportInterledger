@@ -11,7 +11,7 @@ const COMMON_ACCOUNT = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>NOMBRE APP</Text>
+      <Text style={styles.header}>Tap&Pay</Text>
 
       <View style={styles.content}>
         <TouchableOpacity 

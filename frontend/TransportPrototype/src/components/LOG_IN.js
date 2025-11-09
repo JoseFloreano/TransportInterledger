@@ -42,7 +42,7 @@ const LOG_IN = ({ navigation }) => {
         <Text style={styles.backButtonText}>{'<'}</Text>
       </TouchableOpacity>
 
-      <Text style={styles.header}>NOMBRE APP</Text>
+      <Text style={styles.header}>Tap&Pay</Text>
 
       <View style={styles.content}>
         <TextInput

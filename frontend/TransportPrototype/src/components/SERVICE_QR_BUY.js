@@ -9,7 +9,7 @@ const SERVICE_QR_BUY = ({ navigation }) => {
           <Text style={styles.nfcButtonText}>NFC</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.appName}>NOMBRE APP</Text>
+      <Text style={styles.appName}>Tap&Pay</Text>
       <View style={styles.content}>
         <TouchableOpacity style={styles.cameraContainer}>
           <View style={styles.cameraBox}>
