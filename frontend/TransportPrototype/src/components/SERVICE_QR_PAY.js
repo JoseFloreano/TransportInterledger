@@ -8,7 +8,7 @@ const SERVICE_QR_PAY = ({ navigation }) => {
         <TouchableOpacity style={styles.nfcButton}>
           <Text style={styles.nfcButtonText}>NFC</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.cartButton}>
+        <TouchableOpacity style={styles.cartButton} onPress={() => navigation.navigate('SHOPPINGCART_PRODUCTS')} >
           <Text style={styles.cartIcon}>🛒</Text>
         </TouchableOpacity>
       </View>
@@ -36,7 +36,7 @@ const SERVICE_QR_PAY = ({ navigation }) => {
         <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('WALLETS')}>
           <Text style={styles.navIcon}>💳</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton}>
+        <TouchableOpacity style={styles.navButton} onPress ={() => navigation.navigate('SERVICE_SELL_NFC')}>
           <Text style={styles.navIcon}>🛍️</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('SERVICE_ACCOUNT')}>

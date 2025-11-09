@@ -8,7 +8,7 @@ const SERVICE_SELL_NFC = ({ navigation }) => {
         <TouchableOpacity style={styles.qrButton}>
           <Text style={styles.qrButtonText}>QR</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.cartButton}>
+        <TouchableOpacity style={styles.cartButton} onPress={() => navigation.navigate('SHOPPINGCART_PRODUCTS')}>
           <Text style={styles.cartIcon}>🛒</Text>
         </TouchableOpacity>
       </View>

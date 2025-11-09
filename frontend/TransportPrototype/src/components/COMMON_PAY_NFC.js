@@ -5,8 +5,8 @@ const COMMON_PAY_NFC = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.qrButton}>
-          <Text style={styles.qrButtonText}>QR</Text>
+        <TouchableOpacity style={styles.qrButton} onPress ={() => navigation.navigate('COMMON_PAY_NFC')}>
+          <Text style={styles.qrButtonText} >QR</Text>
         </TouchableOpacity>
       </View>
 
