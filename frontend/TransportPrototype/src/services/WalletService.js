@@ -27,7 +27,7 @@ export const insertWallet = async (name, url, tipo) => {
     console.log('Enviando wallet:', wallet);
     console.log('Ruta: /wallet'); // Verifica que esta sea tu ruta correcta
     
-    const response = await apiCall('wallets', 'POST', wallet);
+    const response = await apiCall('wallet', 'POST', wallet);
     console.log('Respuesta del servidor:', response);
     
     Alert.alert('Success', 'Wallet inserted successfully!');
