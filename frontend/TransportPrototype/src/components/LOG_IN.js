@@ -21,8 +21,7 @@ const LOG_IN = ({ navigation }) => {
       if (result.success) {
         Alert.alert('Éxito', `Bienvenido ${result.user.nombre}`);
         // Navegar a la pantalla principal
-        navigation.replace('WALLETS');
-        console.log("LOG IN")
+        navigation.replace('Home'); // o la pantalla que corresponda
       } else {
         Alert.alert('Error', result.error);
       }
@@ -49,7 +48,7 @@ const LOG_IN = ({ navigation }) => {
           style={styles.input}
           placeholder="username/email"
           placeholderTextColor="#666"
-          value={identifier}
+          value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
         />
