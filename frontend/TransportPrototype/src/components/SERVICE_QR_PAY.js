@@ -4,14 +4,15 @@ import QRCode from 'react-native-qrcode-svg';
 import { cartService } from '../services/CartService';
 import { getProducts } from '../services/ProductsService';
 import { qrService } from '../services/qrService';
+import { paymentService } from '../services/PaymentService';
+import { getDefaultWallet } from '../services/WalletService';
 
 const SERVICE_QR_PAY = ({ navigation }) => {
   const [cartTotal, setCartTotal] = useState(0);
   const [qrData, setQrData] = useState('');
-  const [cartItems, setCartItems] = useState([]);
+  const [hasWallet, setHasWallet] = useState(false);
 
   useEffect(() => {
-    // Cargar el total cuando la pantalla gana foco
     const unsubscribe = navigation.addListener('focus', () => {
       loadCartData();
     });
@@ -20,37 +21,40 @@ const SERVICE_QR_PAY = ({ navigation }) => {
   }, [navigation]);
 
   const loadCartData = async () => {
+    // Verificar wallet
+    const walletResult = await getDefaultWallet();
+    setHasWallet(walletResult.success && walletResult.data);
+
+    // Calcular total del carrito
     const cart = await cartService.getCart();
     const result = await getProducts();
     
     if (result.success && result.data) {
       let total = 0;
-      const items = [];
       
       result.data.forEach(product => {
         const amount = cart[product._id] || 0;
         if (amount > 0) {
           total += product.precio * amount;
-          items.push({
-            id: product._id,
-            name: product.nombre,
-            price: product.precio,
-            quantity: amount
-          });
         }
       });
       
       setCartTotal(total);
-      setCartItems(items);
       
-      // Generar datos del QR con la información del carrito
-      const qrContent = qrService.generateCartQR({
-        items: items,
-        total: total,
-        timestamp: Date.now()
-      });
-      
-      setQrData(qrContent);
+      // Generar QR de pago si hay productos y wallet
+      if (total > 0 && hasWallet) {
+        const paymentQRResult = await paymentService.generatePaymentQR();
+        
+        if (paymentQRResult.success) {
+          const qrContent = qrService.generatePaymentQR(
+            paymentQRResult.data.amount,
+            paymentQRResult.data.receivingWalletUrl
+          );
+          setQrData(qrContent);
+        }
+      } else {
+        setQrData('');
+      }
     }
   };
 
@@ -83,7 +87,7 @@ const SERVICE_QR_PAY = ({ navigation }) => {
         </TouchableOpacity>
 
         <View style={styles.qrContainer}>
-          {qrData ? (
+          {qrData && cartTotal > 0 ? (
             <View style={styles.qrCodeWrapper}>
               <QRCode
                 value={qrData}
@@ -93,33 +97,33 @@ const SERVICE_QR_PAY = ({ navigation }) => {
               />
             </View>
           ) : (
-            <View style={styles.qrCode}>
-              <View style={styles.qrTopLeft} />
-              <View style={styles.qrTopRight} />
-              <View style={styles.qrBottomLeft} />
-              <View style={styles.qrCenter} />
+            <View style={styles.placeholderContainer}>
+              <View style={styles.qrCode}>
+                <View style={styles.qrTopLeft} />
+                <View style={styles.qrTopRight} />
+                <View style={styles.qrBottomLeft} />
+                <View style={styles.qrCenter} />
+              </View>
+              <Text style={styles.placeholderText}>
+                {cartTotal === 0 
+                  ? 'Add products to generate QR' 
+                  : !hasWallet 
+                  ? 'Set up a wallet first' 
+                  : 'Loading...'}
+              </Text>
             </View>
           )}
         </View>
         
-        {/* Mostrar total solo si es mayor a 0 */}
         {cartTotal > 0 && (
           <View style={styles.totalBadge}>
             <Text style={styles.totalText}>${cartTotal.toFixed(2)}</Text>
           </View>
         )}
         
-        {cartTotal === 0 && (
-          <View style={styles.emptyCartMessage}>
-            <Text style={styles.emptyCartText}>
-              El carrito está vacío
-            </Text>
-          </View>
-        )}
-        
         <View style={styles.toggleContainer}>
           <Text style={styles.toggleText}>ME</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SERVICE_QR_BUY')}>
+          <TouchableOpacity onPress={() => navigation.navigate('COMMON_PAY_QR')}>
             <Text style={styles.arrow}>←</Text>
           </TouchableOpacity>
           <Text style={styles.toggleText}>THEM</Text>
@@ -218,6 +222,9 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 20,
   },
+  placeholderContainer: {
+    alignItems: 'center'
+  },
   qrCode: { 
     width: 200, 
     height: 200, 
@@ -260,6 +267,12 @@ const styles = StyleSheet.create({
     height: 30, 
     backgroundColor: '#2C2C2C' 
   },
+  placeholderText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 15
+  },
   totalBadge: { 
     backgroundColor: '#E8E8E8', 
     paddingVertical: 12, 
@@ -272,15 +285,6 @@ const styles = StyleSheet.create({
     fontSize: 18, 
     fontWeight: '600', 
     color: '#2C2C2C' 
-  },
-  emptyCartMessage: {
-    alignSelf: 'center',
-    marginBottom: 20,
-  },
-  emptyCartText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
   },
   toggleContainer: { 
     flexDirection: 'row', 

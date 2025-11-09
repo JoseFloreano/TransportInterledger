@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Alert } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { qrService } from '../services/qrService';
+import { paymentService } from '../services/PaymentService';
 
 const COMMON_PAY_QR = ({ navigation }) => {
   const [showCamera, setShowCamera] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const handleOpenCamera = async () => {
     if (!permission?.granted) {
@@ -18,46 +20,73 @@ const COMMON_PAY_QR = ({ navigation }) => {
     }
     setShowCamera(true);
     setScanned(false);
+    setProcessing(false);
   };
 
   const handleCloseCamera = () => {
     setShowCamera(false);
     setScanned(false);
+    setProcessing(false);
   };
 
   const handleBarCodeScanned = async ({ data }) => {
-    if (scanned) return;
+    if (scanned || processing) return;
+    
     setScanned(true);
+    setProcessing(true);
     
     try {
-      if (!qrService.isValidQR(data)) {
-        Alert.alert('QR Inválido', 'El código QR no contiene información válida del producto');
+      console.log('QR scanned:', data);
+
+      // Verificar si es un QR de pago
+      if (!qrService.isPaymentQR(data)) {
+        Alert.alert('QR Inválido', 'Este no es un código QR de pago válido');
         setScanned(false);
+        setProcessing(false);
         return;
       }
 
-      const productData = qrService.parseQRData(data);
-
-      if (productData.stock <= 0) {
-        Alert.alert('Sin stock', 'Este producto no está disponible');
-        handleCloseCamera();
-        return;
-      }
-
-      handleCloseCamera();
+      // Parsear datos del QR
+      const paymentData = qrService.parsePaymentQR(data);
       
+      if (!paymentData) {
+        Alert.alert('Error', 'No se pudo leer el código QR');
+        setScanned(false);
+        setProcessing(false);
+        return;
+      }
+
+      console.log('Payment data:', paymentData);
+
+      // Cerrar cámara
+      handleCloseCamera();
+
+      // Mostrar información del pago
       Alert.alert(
-        'Producto escaneado',
-        `${productData.name}\nPrecio: $${productData.price.toFixed(2)}\nStock disponible: ${productData.stock}`,
+        'Confirmar Pago',
+        `Monto: $${paymentData.amount}\n\n¿Deseas proceder con el pago?`,
         [
-          { text: 'Escanear otro', onPress: handleOpenCamera },
-          { text: 'OK', style: 'cancel' }
+          { 
+            text: 'Cancelar', 
+            style: 'cancel',
+            onPress: () => setProcessing(false)
+          },
+          {
+            text: 'Pagar',
+            onPress: async () => {
+              // Procesar el pago
+              await paymentService.processQRPayment(paymentData, navigation);
+              setProcessing(false);
+            }
+          }
         ]
       );
+
     } catch (error) {
       console.error('Error processing QR:', error);
       Alert.alert('Error', 'No se pudo procesar el código QR');
       setScanned(false);
+      setProcessing(false);
     }
   };
 
@@ -66,7 +95,7 @@ const COMMON_PAY_QR = ({ navigation }) => {
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.nfcButton} 
-          onPress={() => navigation.navigate('COMMON_PAY_NFC')}
+          onPress={() => navigation.navigate('SERVICE_PAY_NFC')}
         >
           <Text style={styles.nfcButtonText}>NFC</Text>
         </TouchableOpacity>
@@ -81,7 +110,7 @@ const COMMON_PAY_QR = ({ navigation }) => {
         >
           <View style={styles.cameraBox}>
             <Text style={styles.cameraIcon}>📷</Text>
-            <Text style={styles.scanText}>Tocar para escanear QR</Text>
+            <Text style={styles.scanText}>Tocar para escanear QR de pago</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -150,10 +179,10 @@ const COMMON_PAY_QR = ({ navigation }) => {
 
                 <View style={styles.bottomOverlay}>
                   <Text style={styles.instructionText}>
-                    Apunta al código QR del producto
+                    Apunta al código QR de pago del vendedor
                   </Text>
-                  {scanned && (
-                    <Text style={styles.processingText}>Procesando...</Text>
+                  {processing && (
+                    <Text style={styles.processingText}>Procesando pago...</Text>
                   )}
                 </View>
               </View>

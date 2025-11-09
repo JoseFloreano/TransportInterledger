@@ -260,5 +260,106 @@ export const paymentService = {
     };
 
     return checkStatus();
+  },
+  async generatePaymentQR() {
+    try {
+      // Obtener wallet por defecto del seller
+      const walletResult = await getDefaultWallet();
+      if (!walletResult.success || !walletResult.data) {
+        Alert.alert('Error', 'No default wallet found. Please set a default wallet.');
+        return { success: false };
+      }
+
+      // Calcular total del carrito
+      const cart = await cartService.getCart();
+      const productsResult = await getProducts();
+      
+      if (!productsResult.success) {
+        Alert.alert('Error', 'Failed to load products.');
+        return { success: false };
+      }
+
+      let total = 0;
+      productsResult.data.forEach(product => {
+        const amount = cart[product._id] || 0;
+        total += product.precio * amount;
+      });
+
+      if (total <= 0) {
+        return { success: false, message: 'Cart is empty' };
+      }
+
+      // Generar datos del QR
+      const qrData = {
+        amount: total.toFixed(2),
+        receivingWalletUrl: walletResult.data.url
+      };
+
+      console.log('QR payment data generated:', qrData);
+
+      return { 
+        success: true, 
+        data: qrData 
+      };
+
+    } catch (error) {
+      console.error('Error generating payment QR:', error);
+      Alert.alert('Error', 'Failed to generate payment QR.');
+      return { success: false, error };
+    }
+  },
+
+  // Procesar pago desde QR (buyer side)
+  async processQRPayment(qrData, navigation) {
+    try {
+      console.log('Processing QR payment:', qrData);
+
+      const { amount, receivingWalletUrl } = qrData;
+
+      // Obtener wallet por defecto del buyer
+      const walletResult = await getDefaultWallet();
+      if (!walletResult.success || !walletResult.data) {
+        Alert.alert('Error', 'No default wallet found. Please set a default wallet first.');
+        return { success: false };
+      }
+
+      const sendingWalletUrl = walletResult.data.url;
+
+      // Completar el pago
+      const paymentResult = await this.completePayment(
+        amount,
+        sendingWalletUrl,
+        receivingWalletUrl
+      );
+
+      if (paymentResult.success) {
+        if (paymentResult.requiresApproval) {
+          // El link ya se abrió, ahora esperar confirmación
+          Alert.alert(
+            'Approve Payment',
+            `Amount: $${amount}\n\nPlease approve the payment in your browser, then return to the app.`,
+            [{ text: 'OK' }]
+          );
+
+          // Iniciar polling para verificar el estado
+          await this.waitForPaymentCompletion(paymentResult, navigation);
+        } else if (paymentResult.completed) {
+          // Pago completado sin aprobación
+          navigation.navigate('CONFIRM_TRANSACTION', {
+            success: true,
+            paymentData: paymentResult.data
+          });
+        }
+      } else {
+        Alert.alert('Payment Failed', paymentResult.error || 'Could not process payment');
+      }
+
+      return paymentResult;
+
+    } catch (error) {
+      console.error('Error processing QR payment:', error);
+      Alert.alert('Error', 'Failed to process payment.');
+      return { success: false, error: error.message };
+    }
   }
 };
