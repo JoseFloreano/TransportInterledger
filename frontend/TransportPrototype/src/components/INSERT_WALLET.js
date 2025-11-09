@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, } from 'react-native';
 import { insertWallet } from '../services/WalletService';
 
 const INSERT_WALLET = ({ navigation }) => {

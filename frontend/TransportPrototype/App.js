@@ -11,7 +11,7 @@ import WALLETS from './src/components/WALLETS';
 import COMMON_PAY_NFC from './src/components/COMMON_PAY_NFC';
 import COMMON_PAY_QR from './src/components/COMMON_PAY_QR';
 import COMMON_ACCOUNT from './src/components/COMMON_ACCOUNT';
-import INSERT_WALET from './src/components/INSERT_WALET';
+import INSERT_WALLET from './src/components/INSERT_WALLET';
 import SERVICE_SELL_NFC from './src/components/SERVICE_SELL_NFC';
 import SERVICE_PAY_NFC from './src/components/SERVICE_PAY_NFC';
 import SERVICE_QR_BUY from './src/components/SERVICE_QR_BUY';
@@ -41,7 +41,7 @@ export default function App() {
         <Stack.Screen name="LOG_IN" component={LOG_IN} />
         <Stack.Screen name="FORGOT_PASSWORD" component={FORGOT_PASSWORD} />
         <Stack.Screen name="WALLETS" component={WALLETS} />
-        <Stack.Screen name="INSERT_WALET" component={INSERT_WALET} />
+        <Stack.Screen name="INSERT_WALLET" component={INSERT_WALLET} />
         <Stack.Screen name="INFO_WALET" component={INFO_WALET} />
         <Stack.Screen name="COMMON_PAY_NFC" component={COMMON_PAY_NFC} />
         <Stack.Screen name="COMMON_PAY_QR" component={COMMON_PAY_QR} />
