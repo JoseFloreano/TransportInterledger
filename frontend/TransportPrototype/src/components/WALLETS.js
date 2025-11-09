@@ -98,7 +98,7 @@ useEffect(() => {
         console.log("Redirigiendo a la interfaz de usuario común.");
         navigation.navigate('COMMON_PAY_QR');
         return;
-      } else if (user.rol === 'service') {
+      } else if (user.rol === 'seller') {
         console.log("Redirigiendo a la interfaz de usuario de servicio/vendedor.");
         navigation.navigate('SERVICE_QR_PAY');
         return;
