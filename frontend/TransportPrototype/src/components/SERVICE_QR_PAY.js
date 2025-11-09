@@ -32,7 +32,7 @@ const SERVICE_QR_PAY = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.nfcButton}>
+        <TouchableOpacity style={styles.nfcButton} onPress={() => navigation.navigate('SERVICE_SELL_NFC')}>
           <Text style={styles.nfcButtonText}>NFC</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.cartButton} onPress={() => navigation.navigate('SHOPPINGCART_PRODUCTS')}>

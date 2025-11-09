@@ -74,6 +74,38 @@ export const getWallets = async () => {
   }
 };
 
+export const getDefaultWallet = async () => {
+  try {
+    const usuario = await authService.getCurrentUser();
+    
+    if (!usuario || !usuario._id) {
+      console.log('Usuario no autenticado');
+      return { success: false, data: null };
+    }
+
+    console.log('Obteniendo wallet por defecto...');
+    const response = await apiCall('wallet', 'GET');
+    console.log('Todas las wallets:', response);
+    
+    // Buscar la wallet del usuario que tenga default = true
+    const defaultWallet = response.find(
+      wallet => wallet.id_usuario === usuario._id && wallet.default === true
+    );
+    
+    if (defaultWallet) {
+      console.log('Wallet por defecto encontrada:', defaultWallet);
+      return { success: true, data: defaultWallet };
+    } else {
+      console.log('No se encontró wallet por defecto');
+      return { success: false, data: null, message: 'No default wallet found' };
+    }
+    
+  } catch (error) {
+    console.error('Error fetching default wallet:', error);
+    return { success: false, error, data: null };
+  }
+};
+
 export const updateWallet = async (id, updates) => {
   try {
     const response = await apiCall(`wallet/${id}`, 'PUT', updates);
