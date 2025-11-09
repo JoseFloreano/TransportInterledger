@@ -59,6 +59,8 @@ export const authService = {
         }
       } catch (nameError) {
         console.log('⚠️ No encontrado por nombre tampoco');
+      // Continuar al final
+      }
       
       // 2. Intentar buscar por email (sin propagación de error)
       let response = null;
@@ -88,8 +90,6 @@ export const authService = {
         // No hacer nada, continuar con la búsqueda por nombre
       }
       
-      // Continuar al final
-      }
       
       // 4. Si llegamos aquí, el usuario no existe
       console.log('❌ Usuario no encontrado en ninguna búsqueda');
