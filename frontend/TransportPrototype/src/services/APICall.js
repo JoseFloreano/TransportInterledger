@@ -21,4 +21,4 @@ async function apiCall(endpoint, method = "GET", body = null) {
   }
 }
 
-export default apiCall;
+export { apiCall };
