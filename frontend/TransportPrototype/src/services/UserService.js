@@ -18,7 +18,7 @@ export const userService = {
   // Obtener usuario por ID
   async getUserById(userId) {
     try {
-      const response = await apiCall(`/usuario/${userId}`, 'GET');
+      const response = await apiCall(`usuario/${userId}`, 'GET');
       return { success: true, user: response };
     } catch (error) {
       console.error('Error al obtener usuario:', error);
@@ -29,7 +29,7 @@ export const userService = {
   // Actualizar usuario
   async updateUser(userId, updatedData) {
     try {
-      const response = await apiCall(`/usuario/${userId}`, 'PUT', updatedData);
+      const response = await apiCall(`usuario/${userId}`, 'PUT', updatedData);
       
       // Si es el usuario actual, actualizar AsyncStorage
       const currentUser = await AsyncStorage.getItem('user');
@@ -50,7 +50,7 @@ export const userService = {
   // Actualizar solo el rol del usuario (función específica)
   async updateUserRole(userId, newRole) {
     try {
-      const response = await apiCall(`/usuario/${userId}`, 'PUT', { rol: newRole });
+      const response = await apiCall(`usuario/${userId}`, 'PUT', { rol: newRole });
       console.log('Role updated:', response);
       
       // Actualizar el usuario en AsyncStorage
@@ -74,7 +74,7 @@ export const userService = {
   // Eliminar usuario
   async deleteUser(userId) {
     try {
-      await apiCall(`/usuario/${userId}`, 'DELETE');
+      await apiCall(`usuario/${userId}`, 'DELETE');
       return { success: true };
     } catch (error) {
       console.error('Error al eliminar usuario:', error);
