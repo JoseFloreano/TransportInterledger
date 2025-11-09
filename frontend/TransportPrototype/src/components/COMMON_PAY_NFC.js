@@ -25,7 +25,7 @@ const COMMON_PAY_NFC = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.appName}>NOMBRE APP</Text>
+      <Text style={styles.appName}>Tap&Pay</Text>
 
       <View style={styles.content}>
         <View style={styles.messageContainer}>
