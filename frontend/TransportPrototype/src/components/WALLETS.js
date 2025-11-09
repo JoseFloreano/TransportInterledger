@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { getWallets, deleteWallet } from '../services/WalletService';
 
@@ -95,7 +95,6 @@ const WALLETS = ({ navigation }) => {
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#2C2C2C" />
           <Text style={styles.loadingText}>Cargando wallets...</Text>
         </View>
       ) : (
