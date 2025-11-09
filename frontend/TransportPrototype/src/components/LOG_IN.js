@@ -5,33 +5,9 @@ import { authService } from '../services/AuthService';
 const LOG_IN = ({ navigation }) => {
   const [identifier, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    if (!identifier || !password) {
-      Alert.alert('Error', 'Por favor ingresa usuario y contraseña');
-      return;
-    }
-
-    setLoading(true);
-    
-    try {
-      const result = await authService.login(identifier, password);
-      
-      if (result.success) {
-        Alert.alert('Éxito', `Bienvenido ${result.user.nombre}`);
-
-        // Navegar a la pantalla principal
-        navigation.replace('WALLETS');
-        console.log("LOG IN")
-      } else {
-        Alert.alert('Error', result.error);
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Ocurrió un error al iniciar sesión');
-    } finally {
-      setLoading(false);
-    }
+  const handleLogin = () => {
+    console.log('Login');
   };
 
   return (
