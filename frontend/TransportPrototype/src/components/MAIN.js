@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 const MAIN = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>NOMBRE APP</Text>
+      <Text style={styles.header}>Tap&Pay</Text>
       
       <View style={styles.content}>
         <TouchableOpacity 
