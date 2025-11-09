@@ -24,15 +24,26 @@ export const insertWallet = async (name, url, tipo) => {
       tipo: tipo
     };
 
+    console.log('Enviando wallet:', wallet);
+    console.log('Ruta: /wallets'); // Verifica que esta sea tu ruta correcta
+    
     const response = await apiCall('wallets', 'POST', wallet);
-    console.log('Wallet inserted:', response);
+    console.log('Respuesta del servidor:', response);
     
     Alert.alert('Success', 'Wallet inserted successfully!');
     return { success: true, data: response };
     
   } catch (error) {
     console.error('Error inserting wallet:', error);
-    Alert.alert('Error', 'Failed to insert wallet. Please try again.');
+    
+    // Mejor manejo del error
+    let errorMessage = 'Failed to insert wallet. Please try again.';
+    
+    if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    Alert.alert('Error', errorMessage);
     return { success: false, error };
   }
 };
@@ -46,13 +57,14 @@ export const getWallets = async () => {
       return { success: false, data: [] };
     }
 
-    
-    const response = await apiCall('wallets/user/${usuario._id}', 'GET');
+    console.log('Obteniendo wallets...');
+    const response = await apiCall('wallets', 'GET');
+    console.log('Wallets obtenidas:', response);
     
     // Filtrar wallets del usuario actual
     const userWallets = response.filter(wallet => wallet.id_usuario === usuario._id);
     
-    console.log('Wallets fetched:', userWallets);
+    console.log('Wallets del usuario:', userWallets);
     return { success: true, data: userWallets };
     
   } catch (error) {
@@ -76,7 +88,7 @@ export const updateWallet = async (id, updates) => {
 
 export const deleteWallet = async (id) => {
   try {
-    const response = await apiCall(`/wallets/${id}`, 'DELETE');
+    const response = await apiCall(`wallets/${id}`, 'DELETE');
     Alert.alert('Success', 'Wallet deleted successfully!');
     return { success: true, data: response };
   } catch (error) {
