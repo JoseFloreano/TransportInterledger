@@ -1,3 +1,163 @@
+
+# Tap&Pay: Seamless Cross-Border Payments
+
+## Interledger Hackathon 2025 Project
+
+Tap&Pay is a mobile application designed to revolutionize the way tourists make payments abroad, eliminating currency barriers, high fees, and reliance on cash.
+
+## The Problem: Broken Tourist Payments
+
+International tourists face serious challenges when traveling to countries with different currencies:
+
+**High Costs and Fees:** They are forced to exchange money and pay high bank fees, losing value in every transaction.
+
+**Risk and Time Loss:** Relying on cash increases the risk of theft and wastes time searching for exchange offices.
+
+**Friction for Local Businesses:** Vendors lose sales because they lack digital infrastructure to accept international payments smoothly. A clear example is public transport, where tourists’ lack of local currency causes delays and losses.
+
+## The Solution: Tap&Pay
+
+Tap&Pay is a mobile app that enables instant payments using NFC (contact) or QR codes, powered by the OpenPayments standard.
+
+**How it works:**
+
+- The Vendor enters the price of the product or service in their local currency and activates payment mode.
+- The Tourist pays by simply tapping their phone (NFC) or scanning the QR code.
+- **Automatic Conversion:** The system converts the amount in real time and transfers the funds via the ILP (Interledger Protocol).
+- **Confirmation:** Both parties receive instant notifications and a digital receipt.
+
+## Value Proposition and Impact
+
+| Category | Benefit |
+|----------|---------|
+| For the Tourist | Eliminates the need for cash and currency exchange. Ensures fast, secure, and transparent payments. |
+| For the Merchant | Increases sales by capturing the tourist market, reduces checkout friction, and promotes digital adoption. |
+| Economic / Social | Promotes financial inclusion, supports the local economy, and contributes to a global and interoperable payment ecosystem. |
+
+Tap&Pay positions itself as an instant, low-cost cross-border payment platform, with a business model combining a transaction fee under 1% and premium memberships for high-volume merchants.
+
+## Technical Description and Architecture
+
+### Key Technologies
+
+| Component | Technology | Main Use |
+|-----------|------------|----------|
+| Frontend (App) | React Native with Expo | Mobile user interface (iOS/Android) |
+| Backend (API) | Node.js with REST API | Business logic, authentication, and transaction management |
+| Payments | OpenPayments API | Currency conversion and settlement management |
+| Connectivity | ILP Protocol | International payment routing |
+| Database | MongoDB | Storage of user data, transactions, and authentication |
+
+---
+
+## 🏗 Solution Architecture
+
+The payment flow is designed to be secure and efficient:
+
+📱 Tap&Pay Mobile App  
+⬇️ (NFC / QR PUSH)  
+🖥️ Backend / REST API (Node.js)  
+⬇️ (OpenPayments Transaction)  
+💳 OpenPayments API  
+⬇️ (Routing and Settlement)  
+🌐 ILP (Interledger Protocol) Network  
+⬇️  
+🏦 Financial Institutions (Origin & Destination)
+
+**Quick Flow Explanation:**
+
+1. The user initiates a payment from the mobile app via **NFC or QR**.  
+2. The request reaches the **backend**, which validates the transaction and communicates with the payment API.  
+3. **OpenPayments API** handles currency conversion and fund settlement.  
+4. The **ILP protocol** routes the payment internationally.  
+5. Finally, **banks or financial institutions** receive the transaction in their local currency.
+
+## Requirements and Installation
+
+**Prerequisites**
+
+Make sure you have the following installed:
+
+- Node.js (v18 or higher)  
+- npm (included with Node.js)  
+- Git  
+- MongoDB Atlas Account: For the database  
+- Ngrok: Needed to expose the local API to the Internet (required by Expo and payment simulation)
+
+### 1️. MongoDB Setup
+
+- Create a MongoDB Atlas account and set up a cluster.  
+- Obtain your cluster connection string.  
+- In the `backend/` folder, create a `.env` file and add your connection string:
+
+```env
+# In backend/.env
+MONGO_URI="YOUR_MONGODB_CONNECTION_STRING_HERE"
+```
+
+2️. Clone the Repository
+```bash
+git clone https://github.com/JoseFloreano/TransportInterledger
+cd TransportInterledger
+```
+
+3️. Install Dependencies
+
+Install npm dependencies for both backend and frontend.
+
+Backend (Node.js API)
+```bash
+cd backend
+npm install
+cd ..
+```
+
+
+Frontend (React Native with Expo)
+```bash
+cd frontend
+npm install
+cd ..
+```
+4️. Run the Backend (API)
+
+The Node.js backend must be running and publicly accessible, as the Expo mobile app and OpenPayments services need to interact with it.
+
+Start Local Server
+```bash
+cd backend
+node server.js
+```
+
+The server will start at http://localhost:3000 (or the configured port).
+
+Expose API with Ngrok
+
+Open a new terminal and run:
+```bash
+ngrok http 3000
+```
+
+Ngrok will provide a public URL (e.g., https://xxxxxx.ngrok-free.app).
+Update the frontend API base URL (frontend/App.js or wherever requests are defined) with this public URL.
+
+5️. Run the Frontend (React Native with Expo)
+
+Ensure the Expo Go app is installed on your mobile device.
+```bash
+cd frontend
+npx expo start
+```
+
+Team MembersRoleMember(s):
+
+- **Backend**: José Luis Floreano Hernández, Alejandro Román Salazar Bravo
+
+- **Frontend**: Leonardo Martínez Contreras, Álvaro Alexander Velázquez Matus
+
+
+
+
 # Tap&Pay: Pagos Transfronterizos Sin Esfuerzo
 
 ## Proyecto Interledger Hackathon 2025
@@ -50,57 +210,41 @@ Tap&Pay se posiciona como una plataforma de pagos transfronterizos instantánea 
 
 ## Descripción Técnica y Arquitectura
 
-Tecnologías Clave
+## Tecnologías Clave
 
-Componente
+| Componente | Tecnología | Uso Principal |
+|------------|------------|---------------|
+| Frontend (App) | React Native con Expo | Interfaz de usuario móvil (iOS/Android) |
+| Backend (API) | Node.js con REST API | Lógica de negocio, autenticación y gestión de transacciones |
+| Pagos | OpenPayments API | Conversión de divisas y gestión de liquidación |
+| Conectividad | ILP Protocol | Enrutamiento internacional de los pagos |
+| Base de Datos | MongoDB | Almacenamiento de datos de usuario, transacciones y autenticación |
 
-Tecnología
+---
 
-Uso Principal
-
-Frontend (App)
-
-React Native con Expo
-
-Interfaz de usuario móvil (iOS/Android).
-
-Backend (API)
-
-Node.js con REST API
-
-Lógica de negocio, autenticación y gestión de transacciones.
-
-Pagos
-
-OpenPayments API
-
-Conversión de divisas, gestión de liquidación.
-
-Conectividad
-
-ILP Protocol
-
-Enrutamiento internacional de los pagos.
-
-Base de Datos
-
-MongoDB
-
-Almacenamiento de datos de usuario, transacciones y autenticación.
-
-Arquitectura de la Solución
+## 🏗 Arquitectura de la Solución
 
 El flujo de pago está diseñado para ser seguro y eficiente:
 
-App Móvil Tap&Pay
-      ↓ (NFC/QR PUSH)
-Backend/REST API (Node.js)
-      ↓ (Transacción OpenPayments)
-OpenPayments API
-      ↓ (Enrutamiento y Liquidación)
-ILP (Interledger Protocol) Network
-      ↓
-Instituciones Financieras (Origen y Destino)
+El flujo de pago está diseñado para ser seguro y eficiente:
+
+📱 App Móvil Tap&Pay
+⬇️ (NFC / QR PUSH)
+🖥️ Backend / REST API (Node.js)
+⬇️ (Transacción OpenPayments)
+💳 OpenPayments API
+⬇️ (Enrutamiento y Liquidación)
+🌐 ILP (Interledger Protocol) Network
+⬇️
+🏦 Instituciones Financieras (Origen y Destino)
+
+**Explicación rápida del flujo:**
+
+1. El usuario inicia un pago desde la app móvil mediante **NFC o QR**.  
+2. La solicitud llega al **backend**, que valida la transacción y comunica con la API de pagos.  
+3. **OpenPayments API** gestiona la conversión de divisas y la liquidación de fondos.  
+4. El **protocolo ILP** enruta el pago internacionalmente.  
+5. Finalmente, los **bancos o instituciones financieras** reciben la transacción en su moneda local.
 
 ## Requisitos e Instalación
 
@@ -131,9 +275,11 @@ MONGO_URI="TU_CADENA_DE_CONEXION_MONGODB_AQUI"
 
 
 2️. Clonar el Repositorio
+```bash
 
 git clone https://github.com/JoseFloreano/TransportInterledger
 cd TransportInterledger
+```
 
 
 3️. Instalación de Dependencias
@@ -210,3 +356,16 @@ Escanea el código QR que aparece en la terminal o en la ventana del navegador c
 - **Backend**: José Luis Floreano Hernández, Alejandro Román Salazar Bravo
 
 - **Frontend**: Leonardo Martínez Contreras, Álvaro Alexander Velázquez Matus
+
+
+
+
+
+
+
+
+
+
+
+
+
