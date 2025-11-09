@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 
-const WalletInfoScreen = ({ navigation, route }) => {
-  const { wallet } = route.params || {};
-  
-  const handleChange = (field) => {
-    console.log(`Change ${field}`);
-    // Aquí puedes navegar a una pantalla de edición o mostrar un modal
+const FORGOT_PASSWORD = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+
+  const handleSendCode = () => {
+    console.log('Send code');
   };
 
   const handleConfirm = () => {
-    // Lógica para confirmar cambios
-    console.log('Confirm changes');
-    navigation.goBack();
+    console.log('Confirm');
   };
 
   return (
@@ -27,26 +25,32 @@ const WalletInfoScreen = ({ navigation, route }) => {
       <Text style={styles.header}>NOMBRE APP</Text>
 
       <View style={styles.content}>
-        <View style={styles.fieldRow}>
-          <Text style={styles.fieldLabel}>NAME</Text>
-          <TouchableOpacity onPress={() => handleChange('name')}>
-            <Text style={styles.changeText}>change</Text>
+        <View style={styles.emailRow}>
+          <TextInput
+            style={styles.emailInput}
+            placeholder="email"
+            placeholderTextColor="#666"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <TouchableOpacity 
+            style={styles.sendButton}
+            onPress={handleSendCode}
+          >
+            <Text style={styles.sendButtonText}>send</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.fieldRow}>
-          <Text style={styles.fieldLabel}>ADRESS</Text>
-          <TouchableOpacity onPress={() => handleChange('address')}>
-            <Text style={styles.changeText}>change</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.fieldRow}>
-          <Text style={styles.fieldLabel}>DEFAULT</Text>
-          <TouchableOpacity onPress={() => handleChange('default')}>
-            <Text style={styles.changeText}>change</Text>
-          </TouchableOpacity>
-        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="code"
+          placeholderTextColor="#666"
+          value={code}
+          onChangeText={setCode}
+          keyboardType="number-pad"
+        />
 
         <TouchableOpacity 
           style={styles.confirmButton}
@@ -86,31 +90,45 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 40,
   },
-  fieldRow: {
+  emailRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 15,
+  },
+  emailInput: {
+    flex: 1,
     backgroundColor: '#E8E8E8',
     paddingVertical: 18,
     paddingHorizontal: 20,
-    borderRadius: 15,
-    marginBottom: 20,
-  },
-  fieldLabel: {
+    borderRadius: 20,
     fontSize: 15,
     color: '#2C2C2C',
+    marginRight: 10,
   },
-  changeText: {
+  sendButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 18,
+  },
+  sendButtonText: {
     fontSize: 15,
     color: '#2C2C2C',
     fontWeight: '500',
+  },
+  input: {
+    width: '100%',
+    backgroundColor: '#E8E8E8',
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginBottom: 40,
+    fontSize: 15,
+    color: '#2C2C2C',
   },
   confirmButton: {
     width: '100%',
     backgroundColor: '#E8E8E8',
     paddingVertical: 18,
     borderRadius: 20,
-    marginTop: 40,
     alignItems: 'center',
   },
   confirmButtonText: {
@@ -120,4 +138,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WalletInfoScreen;
+export default FORGOT_PASSWORD;

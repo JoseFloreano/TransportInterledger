@@ -1,16 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
-const WalletCard = ({ title, defaultTransport, isActive, onPress }) => {
-  const getBackgroundColor = () => {
-    if (title === 'WALET 1') return '#F5DEB3';
-    if (title === 'WALET 2') return '#B0D4E3';
-    return '#D0D0D0';
-  };
-
+const WalletCard = ({ title, defaultTransport, onPress, backgroundColor }) => {
   return (
     <TouchableOpacity 
-      style={[styles.walletCard, { backgroundColor: getBackgroundColor() }]}
+      style={[styles.walletCard, { backgroundColor }]}
       onPress={onPress}
     >
       <View style={styles.walletHeader}>
@@ -22,11 +16,11 @@ const WalletCard = ({ title, defaultTransport, isActive, onPress }) => {
   );
 };
 
-const WalletsScreen = ({ navigation }) => {
+const WALLETS = ({ navigation }) => {
   const wallets = [
-    { id: 1, title: 'WALET 1', defaultTransport: 'SUBWAY' },
-    { id: 2, title: 'WALET 2', defaultTransport: 'BUS' },
-    { id: 3, title: 'WALET 3', defaultTransport: 'NONE' },
+    { id: 1, title: 'WALET 1', defaultTransport: 'SUBWAY', color: '#F5DEB3' },
+    { id: 2, title: 'WALET 2', defaultTransport: 'BUS', color: '#B0D4E3' },
+    { id: 3, title: 'WALET 3', defaultTransport: 'NONE', color: '#D0D0D0' },
   ];
 
   return (
@@ -42,13 +36,14 @@ const WalletsScreen = ({ navigation }) => {
             key={wallet.id}
             title={wallet.title}
             defaultTransport={wallet.defaultTransport}
-            onPress={() => navigation.navigate('WalletInfo', { wallet })}
+            backgroundColor={wallet.color}
+            onPress={() => navigation.navigate('INFO_WALET', { wallet })}
           />
         ))}
 
         <TouchableOpacity 
           style={styles.insertButton}
-          onPress={() => navigation.navigate('InsertWallet')}
+          onPress={() => navigation.navigate('INSERT_WALET')}
         >
           <Text style={styles.insertButtonText}>INSERT WALLET</Text>
         </TouchableOpacity>
@@ -60,13 +55,13 @@ const WalletsScreen = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.navButton}
-          onPress={() => navigation.navigate('Payment')}
+          onPress={() => navigation.navigate('COMMON_PAY_QR')}
         >
           <Text style={styles.navIcon}>🛍️</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.navButton}
-          onPress={() => navigation.navigate('Account')}
+          onPress={() => navigation.navigate('COMMON_ACCOUNT')}
         >
           <Text style={styles.navIcon}>👤</Text>
         </TouchableOpacity>
@@ -150,4 +145,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WalletsScreen;
+export default WALLETS;

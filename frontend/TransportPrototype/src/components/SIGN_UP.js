@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 
-const SignUpScreen = ({ navigation }) => {
+const SIGN_UP = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSignUp = () => {
-    // Lógica de registro
-    console.log('Sign up pressed');
-    navigation.navigate('Wallets')
+    console.log('Sign up');
   };
 
   const handleSelectPhoto = () => {
-    // Lógica para seleccionar foto
-    console.log('Select photo pressed');
+    console.log('Select photo');
   };
 
   return (
@@ -82,7 +79,7 @@ const SignUpScreen = ({ navigation }) => {
           style={styles.signUpButton}
           onPress={handleSignUp}
         >
-          <Text style={styles.signUpButtonText}>SIGN UP</Text>
+          <Text style={styles.signUpButtonText}>SING UP</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -156,4 +153,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpScreen;
+export default SIGN_UP;

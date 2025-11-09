@@ -31,13 +31,13 @@ mongoose.connect("mongodb+srv://jlfloreano64_db_user:P0GvYpPKQbRabdTu@cluster1.p
     .catch(err => console.error("❌ Error de conexión:", err));
 
 // Rutas
-app.use("/transaccion", transaccionRoutes);
-app.use("/usuario", usuarioRoutes);
-app.use("/wallet", walletRoutes);
-app.use("/producto", productoRoutes);
+app.use("/db/transaccion", transaccionRoutes);
+app.use("/db/usuario", usuarioRoutes);
+app.use("/db/wallet", walletRoutes);
+app.use("/db/producto", productoRoutes);
 
 // Ruta de prueba para verificar CORS
-app.get("/api/health", (req, res) => {
+app.get("/db/health", (req, res) => {
   res.json({ 
     status: "OK", 
     message: "Backend con CORS funcionando",

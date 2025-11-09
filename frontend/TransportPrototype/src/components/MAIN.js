@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-const MainScreen = ({ navigation }) => {
+const MAIN = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>NOMBRE APP</Text>
@@ -9,20 +9,19 @@ const MainScreen = ({ navigation }) => {
       <View style={styles.content}>
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate('LOG_IN')}
         >
           <Text style={styles.buttonText}>LOG IN</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => navigation.navigate('SignUp')}
+          onPress={() => navigation.navigate('SIGN_UP')}
         >
-          <Text style={styles.buttonText}>SING UP</Text>
+          <Text style={styles.buttonText}>SIGN UP</Text>
         </TouchableOpacity>
 
         <View style={styles.logoContainer}>
-          {/* Aquí puedes agregar tu logo/imagen */}
           <View style={styles.logoPlaceholder} />
         </View>
       </View>
@@ -73,4 +72,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MainScreen;
+export default MAIN;

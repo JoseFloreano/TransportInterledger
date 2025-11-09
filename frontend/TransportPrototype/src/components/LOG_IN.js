@@ -1,35 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { authService } from '../services/AuthService';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 
-const LoginScreen = ({ navigation }) => {
+const SIGN_UP = ({ navigation }) => {
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleLogin = async () => {
-    if (!username || !password) {
-      Alert.alert('Error', 'Por favor ingresa usuario y contraseña');
-      return;
-    }
+  const handleSignUp = () => {
+    console.log('Sign up');
+  };
 
-    setLoading(true);
-    
-    try {
-      const result = await authService.login(username, password);
-      
-      if (result.success) {
-        Alert.alert('Éxito', `Bienvenido ${result.user.name}`);
-        // Navegar a la pantalla principal
-        navigation.replace('Wallets');
-      } else {
-        Alert.alert('Error', result.error);
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Ocurrió un error al iniciar sesión');
-    } finally {
-      setLoading(false);
-    }
+  const handleSelectPhoto = () => {
+    console.log('Select photo');
   };
 
   return (
@@ -44,14 +27,32 @@ const LoginScreen = ({ navigation }) => {
       <Text style={styles.header}>NOMBRE APP</Text>
 
       <View style={styles.content}>
+        <TouchableOpacity 
+          style={styles.photoContainer}
+          onPress={handleSelectPhoto}
+        >
+          <View style={styles.photoCircle}>
+            <Text style={styles.cameraIcon}>📷</Text>
+          </View>
+        </TouchableOpacity>
+
         <TextInput
           style={styles.input}
-          placeholder="username/email"
+          placeholder="email"
+          placeholderTextColor="#666"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="username"
           placeholderTextColor="#666"
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
-          editable={!loading}
         />
 
         <TextInput
@@ -62,30 +63,28 @@ const LoginScreen = ({ navigation }) => {
           onChangeText={setPassword}
           secureTextEntry
           autoCapitalize="none"
-          editable={!loading}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="confirm password"
+          placeholderTextColor="#666"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+          autoCapitalize="none"
         />
 
         <TouchableOpacity 
-          onPress={() => navigation.navigate('ForgotPassword')}
-          style={styles.forgotPasswordContainer}
+          style={styles.signUpButton}
+          onPress={handleSignUp}
         >
-          <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.loginButton, loading && styles.loginButtonDisabled]}
-          onPress={handleLogin}
-          disabled={loading}
-        >
-          <Text style={styles.loginButtonText}>
-            {loading ? 'INICIANDO...' : 'LOG IN'}
-          </Text>
+          <Text style={styles.signUpButtonText}>SING UP</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -109,10 +108,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: '#2C2C2C',
-    marginBottom: 60,
+    marginBottom: 40,
   },
   content: {
     paddingHorizontal: 40,
+    alignItems: 'center',
+  },
+  photoContainer: {
+    marginBottom: 30,
+  },
+  photoCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#D8D8D8',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cameraIcon: {
+    fontSize: 40,
   },
   input: {
     width: '100%',
@@ -124,17 +138,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#2C2C2C',
   },
-  forgotPasswordContainer: {
-    alignSelf: 'flex-start',
-    marginTop: 5,
-    marginBottom: 30,
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: '#2C2C2C',
-    textDecorationLine: 'underline',
-  },
-  loginButton: {
+  signUpButton: {
     width: '100%',
     backgroundColor: '#E8E8E8',
     paddingVertical: 18,
@@ -142,11 +146,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
   },
-  loginButtonText: {
+  signUpButtonText: {
     fontSize: 16,
     fontWeight: '500',
     color: '#2C2C2C',
   },
 });
 
-export default LoginScreen;
+export default SIGN_UP;
