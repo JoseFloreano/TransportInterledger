@@ -7,9 +7,8 @@ const WalletCard = ({ wallet, onPress, onLongPress }) => {
   // Asignar colores basados en el tipo o usar colores aleatorios
   const getColorByType = (tipo) => {
     const colors = {
-      'Bitcoin': '#F7931A',
-      'Ethereum': '#627EEA',
-      'BNB': '#F3BA2F',
+      'common': '#F7931A',
+      'seller': '#627EEA',
       'default': '#E8E8E8'
     };
     return colors[tipo] || colors.default;
